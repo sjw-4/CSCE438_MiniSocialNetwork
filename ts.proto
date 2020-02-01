@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+servcie TinySocial {
+    rpc GetList(User) returns (stream User) {}
+    rpc Unfollow(stream User) returns (Status) {}
+    rpc Follow(stream User) returns (Status) {}
+    rpc GetTimeline(User) returns (stream Post) {}
+    rpc PostTimeline(NewPost) returns (Status) {}
+}
+
+message User {
+    string name = 1;
+}
+message Status {
+    int stat = 1;
+}
+message Post {
+    string name = 1;
+    int32 time = 2;
+    string postText = 3;
+}
+message NewPost {
+    string postFrom = 1;
+    string postTo = 2;
+    string postText = 3;
+}
