@@ -1,1 +1,5 @@
 grpc_cpp_plugin
+ts.grpc.pb.cc
+ts.grpc.pb.h
+ts.pb.cc
+ts.pb.h

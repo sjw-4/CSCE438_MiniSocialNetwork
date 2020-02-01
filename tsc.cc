@@ -7,6 +7,25 @@
 #include <grpc++/grpc++.h>
 #include "client.h"
 
+#include "ts.grpc.pb.h"
+#include <grpc/grpc.h>
+#include <grpcpp/channel.h>
+#include <grpcpp/client_context.h>
+#include <grpcpp/create_channel.h>
+#include <grpcpp/security/credentials.h>
+
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientReaderWriter;
+using grpc::ClientWriter;
+using grpc::Status;
+using tinysocial::User;
+using tinysocial::Post;
+using tinysocial::NewPost;
+using tinysocial::Status;
+using tinysocial::TinySocial;
+
 class Client : public IClient
 {
     public:
@@ -27,6 +46,8 @@ class Client : public IClient
         // You can have an instance of the client stub
         // as a member variable.
         //std::unique_ptr<NameOfYourStubClass::Stub> stub_;
+
+        std::unique_ptr<TinySocial::Stub> stub_;
 };
 
 int main(int argc, char** argv) {
@@ -66,6 +87,8 @@ int Client::connectTo()
     // a member variable in your own Client class.
     // Please refer to gRpc tutorial how to create a stub.
 	// ------------------------------------------------------------
+
+    stub_(TinySocial::Stub(grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials()));)
 
     return 1; // return 1 if success, otherwise return -1
 }
