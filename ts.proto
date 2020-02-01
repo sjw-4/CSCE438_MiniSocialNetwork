@@ -14,7 +14,7 @@ message User {
     string name = 1;
 }
 message Status {
-    int stat = 1;
+    int32 stat = 1;
 }
 message Post {
     string name = 1;
