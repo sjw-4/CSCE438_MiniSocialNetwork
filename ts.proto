@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-servcie TinySocial {
+package tinysocial;
+
+service TinySocial {
     rpc GetList(User) returns (stream User) {}
     rpc Unfollow(stream User) returns (Status) {}
     rpc Follow(stream User) returns (Status) {}
