@@ -6,15 +6,19 @@
 
 #include "ts.pb.h"
 
-#include <grpc++/impl/codegen/async_stream.h>
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/method_handler_impl.h>
-#include <grpc++/impl/codegen/proto_utils.h>
-#include <grpc++/impl/codegen/rpc_method.h>
-#include <grpc++/impl/codegen/service_type.h>
-#include <grpc++/impl/codegen/status.h>
-#include <grpc++/impl/codegen/stub_options.h>
-#include <grpc++/impl/codegen/sync_stream.h>
+#include <functional>
+#include <grpcpp/impl/codegen/async_generic_service.h>
+#include <grpcpp/impl/codegen/async_stream.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/method_handler_impl.h>
+#include <grpcpp/impl/codegen/proto_utils.h>
+#include <grpcpp/impl/codegen/rpc_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/service_type.h>
+#include <grpcpp/impl/codegen/status.h>
+#include <grpcpp/impl/codegen/stub_options.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
 
 namespace grpc {
 class CompletionQueue;
@@ -76,6 +80,17 @@ class TinySocial final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tinysocial::Status>> PrepareAsyncPostTimeline(::grpc::ClientContext* context, const ::tinysocial::NewPost& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tinysocial::Status>>(PrepareAsyncPostTimelineRaw(context, request, cq));
     }
+    class experimental_async_interface {
+     public:
+      virtual ~experimental_async_interface() {}
+      virtual void GetList(::grpc::ClientContext* context, ::tinysocial::User* request, ::grpc::experimental::ClientReadReactor< ::tinysocial::User>* reactor) = 0;
+      virtual void Unfollow(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::experimental::ClientWriteReactor< ::tinysocial::User>* reactor) = 0;
+      virtual void Follow(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::experimental::ClientWriteReactor< ::tinysocial::User>* reactor) = 0;
+      virtual void GetTimeline(::grpc::ClientContext* context, ::tinysocial::User* request, ::grpc::experimental::ClientReadReactor< ::tinysocial::Post>* reactor) = 0;
+      virtual void PostTimeline(::grpc::ClientContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void PostTimeline(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::tinysocial::Status* response, std::function<void(::grpc::Status)>) = 0;
+    };
+    virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
     virtual ::grpc::ClientReaderInterface< ::tinysocial::User>* GetListRaw(::grpc::ClientContext* context, const ::tinysocial::User& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::tinysocial::User>* AsyncGetListRaw(::grpc::ClientContext* context, const ::tinysocial::User& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
@@ -138,9 +153,26 @@ class TinySocial final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tinysocial::Status>> PrepareAsyncPostTimeline(::grpc::ClientContext* context, const ::tinysocial::NewPost& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tinysocial::Status>>(PrepareAsyncPostTimelineRaw(context, request, cq));
     }
+    class experimental_async final :
+      public StubInterface::experimental_async_interface {
+     public:
+      void GetList(::grpc::ClientContext* context, ::tinysocial::User* request, ::grpc::experimental::ClientReadReactor< ::tinysocial::User>* reactor) override;
+      void Unfollow(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::experimental::ClientWriteReactor< ::tinysocial::User>* reactor) override;
+      void Follow(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::experimental::ClientWriteReactor< ::tinysocial::User>* reactor) override;
+      void GetTimeline(::grpc::ClientContext* context, ::tinysocial::User* request, ::grpc::experimental::ClientReadReactor< ::tinysocial::Post>* reactor) override;
+      void PostTimeline(::grpc::ClientContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response, std::function<void(::grpc::Status)>) override;
+      void PostTimeline(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::tinysocial::Status* response, std::function<void(::grpc::Status)>) override;
+     private:
+      friend class Stub;
+      explicit experimental_async(Stub* stub): stub_(stub) { }
+      Stub* stub() { return stub_; }
+      Stub* stub_;
+    };
+    class experimental_async_interface* experimental_async() override { return &async_stub_; }
 
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
+    class experimental_async async_stub_{this};
     ::grpc::ClientReader< ::tinysocial::User>* GetListRaw(::grpc::ClientContext* context, const ::tinysocial::User& request) override;
     ::grpc::ClientAsyncReader< ::tinysocial::User>* AsyncGetListRaw(::grpc::ClientContext* context, const ::tinysocial::User& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::tinysocial::User>* PrepareAsyncGetListRaw(::grpc::ClientContext* context, const ::tinysocial::User& request, ::grpc::CompletionQueue* cq) override;
@@ -185,7 +217,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) final override {
+    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -205,7 +237,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) final override {
+    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -225,7 +257,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) final override {
+    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -245,7 +277,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) final override {
+    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -265,7 +297,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) final override {
+    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -274,6 +306,120 @@ class TinySocial final {
     }
   };
   typedef WithAsyncMethod_GetList<WithAsyncMethod_Unfollow<WithAsyncMethod_Follow<WithAsyncMethod_GetTimeline<WithAsyncMethod_PostTimeline<Service > > > > > AsyncService;
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetList : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_GetList() {
+      ::grpc::Service::experimental().MarkMethodCallback(0,
+        new ::grpc::internal::CallbackServerStreamingHandler< ::tinysocial::User, ::tinysocial::User>(
+          [this] { return this->GetList(); }));
+    }
+    ~ExperimentalWithCallbackMethod_GetList() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerWriteReactor< ::tinysocial::User, ::tinysocial::User>* GetList() {
+      return new ::grpc::internal::UnimplementedWriteReactor<
+        ::tinysocial::User, ::tinysocial::User>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_Unfollow : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_Unfollow() {
+      ::grpc::Service::experimental().MarkMethodCallback(1,
+        new ::grpc::internal::CallbackClientStreamingHandler< ::tinysocial::User, ::tinysocial::Status>(
+          [this] { return this->Unfollow(); }));
+    }
+    ~ExperimentalWithCallbackMethod_Unfollow() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerReadReactor< ::tinysocial::User, ::tinysocial::Status>* Unfollow() {
+      return new ::grpc::internal::UnimplementedReadReactor<
+        ::tinysocial::User, ::tinysocial::Status>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_Follow : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_Follow() {
+      ::grpc::Service::experimental().MarkMethodCallback(2,
+        new ::grpc::internal::CallbackClientStreamingHandler< ::tinysocial::User, ::tinysocial::Status>(
+          [this] { return this->Follow(); }));
+    }
+    ~ExperimentalWithCallbackMethod_Follow() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerReadReactor< ::tinysocial::User, ::tinysocial::Status>* Follow() {
+      return new ::grpc::internal::UnimplementedReadReactor<
+        ::tinysocial::User, ::tinysocial::Status>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_GetTimeline : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_GetTimeline() {
+      ::grpc::Service::experimental().MarkMethodCallback(3,
+        new ::grpc::internal::CallbackServerStreamingHandler< ::tinysocial::User, ::tinysocial::Post>(
+          [this] { return this->GetTimeline(); }));
+    }
+    ~ExperimentalWithCallbackMethod_GetTimeline() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerWriteReactor< ::tinysocial::User, ::tinysocial::Post>* GetTimeline() {
+      return new ::grpc::internal::UnimplementedWriteReactor<
+        ::tinysocial::User, ::tinysocial::Post>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_PostTimeline : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_PostTimeline() {
+      ::grpc::Service::experimental().MarkMethodCallback(4,
+        new ::grpc::internal::CallbackUnaryHandler< ::tinysocial::NewPost, ::tinysocial::Status>(
+          [this](::grpc::ServerContext* context,
+                 const ::tinysocial::NewPost* request,
+                 ::tinysocial::Status* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   return this->PostTimeline(context, request, response, controller);
+                 }));
+    }
+    ~ExperimentalWithCallbackMethod_PostTimeline() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  typedef ExperimentalWithCallbackMethod_GetList<ExperimentalWithCallbackMethod_Unfollow<ExperimentalWithCallbackMethod_Follow<ExperimentalWithCallbackMethod_GetTimeline<ExperimentalWithCallbackMethod_PostTimeline<Service > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GetList : public BaseClass {
    private:
@@ -286,7 +432,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) final override {
+    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -303,7 +449,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) final override {
+    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -320,7 +466,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) final override {
+    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -337,7 +483,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) final override {
+    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -354,10 +500,223 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) final override {
+    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetList : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_GetList() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_GetList() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetList(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(0, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_Unfollow : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_Unfollow() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_Unfollow() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestUnfollow(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(1, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_Follow : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_Follow() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_Follow() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestFollow(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_GetTimeline : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_GetTimeline() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_GetTimeline() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestGetTimeline(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_PostTimeline : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_PostTimeline() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_PostTimeline() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPostTimeline(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetList : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetList() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(0,
+        new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this] { return this->GetList(); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetList() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerWriteReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* GetList() {
+      return new ::grpc::internal::UnimplementedWriteReactor<
+        ::grpc::ByteBuffer, ::grpc::ByteBuffer>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_Unfollow : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_Unfollow() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(1,
+        new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this] { return this->Unfollow(); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_Unfollow() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Unfollow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerReadReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* Unfollow() {
+      return new ::grpc::internal::UnimplementedReadReactor<
+        ::grpc::ByteBuffer, ::grpc::ByteBuffer>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_Follow : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_Follow() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(2,
+        new ::grpc::internal::CallbackClientStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this] { return this->Follow(); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_Follow() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Follow(::grpc::ServerContext* context, ::grpc::ServerReader< ::tinysocial::User>* reader, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerReadReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* Follow() {
+      return new ::grpc::internal::UnimplementedReadReactor<
+        ::grpc::ByteBuffer, ::grpc::ByteBuffer>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_GetTimeline : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_GetTimeline() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(3,
+        new ::grpc::internal::CallbackServerStreamingHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this] { return this->GetTimeline(); }));
+    }
+    ~ExperimentalWithRawCallbackMethod_GetTimeline() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::experimental::ServerWriteReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* GetTimeline() {
+      return new ::grpc::internal::UnimplementedWriteReactor<
+        ::grpc::ByteBuffer, ::grpc::ByteBuffer>;}
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_PostTimeline : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_PostTimeline() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(4,
+        new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->PostTimeline(context, request, response, controller);
+                 }));
+    }
+    ~ExperimentalWithRawCallbackMethod_PostTimeline() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void PostTimeline(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_PostTimeline : public BaseClass {
@@ -372,7 +731,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) final override {
+    ::grpc::Status PostTimeline(::grpc::ServerContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -393,7 +752,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) final override {
+    ::grpc::Status GetList(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::User>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -413,7 +772,7 @@ class TinySocial final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) final override {
+    ::grpc::Status GetTimeline(::grpc::ServerContext* context, const ::tinysocial::User* request, ::grpc::ServerWriter< ::tinysocial::Post>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }

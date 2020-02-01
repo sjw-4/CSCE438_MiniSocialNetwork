@@ -5,14 +5,17 @@
 #include "ts.pb.h"
 #include "ts.grpc.pb.h"
 
-#include <grpc++/impl/codegen/async_stream.h>
-#include <grpc++/impl/codegen/async_unary_call.h>
-#include <grpc++/impl/codegen/channel_interface.h>
-#include <grpc++/impl/codegen/client_unary_call.h>
-#include <grpc++/impl/codegen/method_handler_impl.h>
-#include <grpc++/impl/codegen/rpc_service_method.h>
-#include <grpc++/impl/codegen/service_type.h>
-#include <grpc++/impl/codegen/sync_stream.h>
+#include <functional>
+#include <grpcpp/impl/codegen/async_stream.h>
+#include <grpcpp/impl/codegen/async_unary_call.h>
+#include <grpcpp/impl/codegen/channel_interface.h>
+#include <grpcpp/impl/codegen/client_unary_call.h>
+#include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/method_handler_impl.h>
+#include <grpcpp/impl/codegen/rpc_service_method.h>
+#include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/service_type.h>
+#include <grpcpp/impl/codegen/sync_stream.h>
 namespace tinysocial {
 
 static const char* TinySocial_method_names[] = {
@@ -24,6 +27,7 @@ static const char* TinySocial_method_names[] = {
 };
 
 std::unique_ptr< TinySocial::Stub> TinySocial::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
   std::unique_ptr< TinySocial::Stub> stub(new TinySocial::Stub(channel));
   return stub;
 }
@@ -40,6 +44,10 @@ TinySocial::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
   return ::grpc::internal::ClientReaderFactory< ::tinysocial::User>::Create(channel_.get(), rpcmethod_GetList_, context, request);
 }
 
+void TinySocial::Stub::experimental_async::GetList(::grpc::ClientContext* context, ::tinysocial::User* request, ::grpc::experimental::ClientReadReactor< ::tinysocial::User>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::tinysocial::User>::Create(stub_->channel_.get(), stub_->rpcmethod_GetList_, context, request, reactor);
+}
+
 ::grpc::ClientAsyncReader< ::tinysocial::User>* TinySocial::Stub::AsyncGetListRaw(::grpc::ClientContext* context, const ::tinysocial::User& request, ::grpc::CompletionQueue* cq, void* tag) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::tinysocial::User>::Create(channel_.get(), cq, rpcmethod_GetList_, context, request, true, tag);
 }
@@ -50,6 +58,10 @@ TinySocial::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
 
 ::grpc::ClientWriter< ::tinysocial::User>* TinySocial::Stub::UnfollowRaw(::grpc::ClientContext* context, ::tinysocial::Status* response) {
   return ::grpc::internal::ClientWriterFactory< ::tinysocial::User>::Create(channel_.get(), rpcmethod_Unfollow_, context, response);
+}
+
+void TinySocial::Stub::experimental_async::Unfollow(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::experimental::ClientWriteReactor< ::tinysocial::User>* reactor) {
+  ::grpc::internal::ClientCallbackWriterFactory< ::tinysocial::User>::Create(stub_->channel_.get(), stub_->rpcmethod_Unfollow_, context, response, reactor);
 }
 
 ::grpc::ClientAsyncWriter< ::tinysocial::User>* TinySocial::Stub::AsyncUnfollowRaw(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::CompletionQueue* cq, void* tag) {
@@ -64,6 +76,10 @@ TinySocial::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
   return ::grpc::internal::ClientWriterFactory< ::tinysocial::User>::Create(channel_.get(), rpcmethod_Follow_, context, response);
 }
 
+void TinySocial::Stub::experimental_async::Follow(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::experimental::ClientWriteReactor< ::tinysocial::User>* reactor) {
+  ::grpc::internal::ClientCallbackWriterFactory< ::tinysocial::User>::Create(stub_->channel_.get(), stub_->rpcmethod_Follow_, context, response, reactor);
+}
+
 ::grpc::ClientAsyncWriter< ::tinysocial::User>* TinySocial::Stub::AsyncFollowRaw(::grpc::ClientContext* context, ::tinysocial::Status* response, ::grpc::CompletionQueue* cq, void* tag) {
   return ::grpc::internal::ClientAsyncWriterFactory< ::tinysocial::User>::Create(channel_.get(), cq, rpcmethod_Follow_, context, response, true, tag);
 }
@@ -76,6 +92,10 @@ TinySocial::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
   return ::grpc::internal::ClientReaderFactory< ::tinysocial::Post>::Create(channel_.get(), rpcmethod_GetTimeline_, context, request);
 }
 
+void TinySocial::Stub::experimental_async::GetTimeline(::grpc::ClientContext* context, ::tinysocial::User* request, ::grpc::experimental::ClientReadReactor< ::tinysocial::Post>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::tinysocial::Post>::Create(stub_->channel_.get(), stub_->rpcmethod_GetTimeline_, context, request, reactor);
+}
+
 ::grpc::ClientAsyncReader< ::tinysocial::Post>* TinySocial::Stub::AsyncGetTimelineRaw(::grpc::ClientContext* context, const ::tinysocial::User& request, ::grpc::CompletionQueue* cq, void* tag) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::tinysocial::Post>::Create(channel_.get(), cq, rpcmethod_GetTimeline_, context, request, true, tag);
 }
@@ -86,6 +106,14 @@ TinySocial::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
 
 ::grpc::Status TinySocial::Stub::PostTimeline(::grpc::ClientContext* context, const ::tinysocial::NewPost& request, ::tinysocial::Status* response) {
   return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_PostTimeline_, context, request, response);
+}
+
+void TinySocial::Stub::experimental_async::PostTimeline(::grpc::ClientContext* context, const ::tinysocial::NewPost* request, ::tinysocial::Status* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_PostTimeline_, context, request, response, std::move(f));
+}
+
+void TinySocial::Stub::experimental_async::PostTimeline(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::tinysocial::Status* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_PostTimeline_, context, request, response, std::move(f));
 }
 
 ::grpc::ClientAsyncResponseReader< ::tinysocial::Status>* TinySocial::Stub::AsyncPostTimelineRaw(::grpc::ClientContext* context, const ::tinysocial::NewPost& request, ::grpc::CompletionQueue* cq) {
