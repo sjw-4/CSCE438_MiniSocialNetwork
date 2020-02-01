@@ -24,9 +24,9 @@ namespace {
 const ::google::protobuf::Descriptor* User_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   User_reflection_ = NULL;
-const ::google::protobuf::Descriptor* Status_descriptor_ = NULL;
+const ::google::protobuf::Descriptor* ReplyStatus_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
-  Status_reflection_ = NULL;
+  ReplyStatus_reflection_ = NULL;
 const ::google::protobuf::Descriptor* Post_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   Post_reflection_ = NULL;
@@ -59,21 +59,21 @@ void protobuf_AssignDesc_ts_2eproto() {
       sizeof(User),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(User, _is_default_instance_));
-  Status_descriptor_ = file->message_type(1);
-  static const int Status_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Status, stat_),
+  ReplyStatus_descriptor_ = file->message_type(1);
+  static const int ReplyStatus_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReplyStatus, stat_),
   };
-  Status_reflection_ =
+  ReplyStatus_reflection_ =
     ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
-      Status_descriptor_,
-      Status::default_instance_,
-      Status_offsets_,
+      ReplyStatus_descriptor_,
+      ReplyStatus::default_instance_,
+      ReplyStatus_offsets_,
       -1,
       -1,
       -1,
-      sizeof(Status),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Status, _internal_metadata_),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Status, _is_default_instance_));
+      sizeof(ReplyStatus),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReplyStatus, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ReplyStatus, _is_default_instance_));
   Post_descriptor_ = file->message_type(2);
   static const int Post_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Post, name_),
@@ -124,7 +124,7 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       User_descriptor_, &User::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-      Status_descriptor_, &Status::default_instance());
+      ReplyStatus_descriptor_, &ReplyStatus::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       Post_descriptor_, &Post::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -136,8 +136,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void protobuf_ShutdownFile_ts_2eproto() {
   delete User::default_instance_;
   delete User_reflection_;
-  delete Status::default_instance_;
-  delete Status_reflection_;
+  delete ReplyStatus::default_instance_;
+  delete ReplyStatus_reflection_;
   delete Post::default_instance_;
   delete Post_reflection_;
   delete NewPost::default_instance_;
@@ -153,25 +153,26 @@ void protobuf_AddDesc_ts_2eproto() {
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\010ts.proto\022\ntinysocial\"\024\n\004User\022\014\n\004name\030\001"
-    " \001(\t\"\026\n\006Status\022\014\n\004stat\030\001 \001(\005\"4\n\004Post\022\014\n\004"
-    "name\030\001 \001(\t\022\014\n\004time\030\002 \001(\005\022\020\n\010postText\030\003 \001"
-    "(\t\"=\n\007NewPost\022\020\n\010postFrom\030\001 \001(\t\022\016\n\006postT"
-    "o\030\002 \001(\t\022\020\n\010postText\030\003 \001(\t2\233\002\n\nTinySocial"
-    "\0221\n\007GetList\022\020.tinysocial.User\032\020.tinysoci"
-    "al.User\"\0000\001\0224\n\010Unfollow\022\020.tinysocial.Use"
-    "r\032\022.tinysocial.Status\"\000(\001\0222\n\006Follow\022\020.ti"
-    "nysocial.User\032\022.tinysocial.Status\"\000(\001\0225\n"
-    "\013GetTimeline\022\020.tinysocial.User\032\020.tinysoc"
-    "ial.Post\"\0000\001\0229\n\014PostTimeline\022\023.tinysocia"
-    "l.NewPost\032\022.tinysocial.Status\"\000b\006proto3", 479);
+    " \001(\t\"\033\n\013ReplyStatus\022\014\n\004stat\030\001 \001(\t\"4\n\004Pos"
+    "t\022\014\n\004name\030\001 \001(\t\022\014\n\004time\030\002 \001(\003\022\020\n\010postTex"
+    "t\030\003 \001(\t\"=\n\007NewPost\022\020\n\010postFrom\030\001 \001(\t\022\016\n\006"
+    "postTo\030\002 \001(\t\022\020\n\010postText\030\003 \001(\t2\246\002\n\nTinyS"
+    "ocial\0221\n\007GetList\022\020.tinysocial.User\032\020.tin"
+    "ysocial.User\"\0000\001\0227\n\010Unfollow\022\020.tinysocia"
+    "l.User\032\027.tinysocial.ReplyStatus\"\000\0225\n\006Fol"
+    "low\022\020.tinysocial.User\032\027.tinysocial.Reply"
+    "Status\"\000\0225\n\013GetTimeline\022\020.tinysocial.Use"
+    "r\032\020.tinysocial.Post\"\0000\001\022>\n\014PostTimeline\022"
+    "\023.tinysocial.NewPost\032\027.tinysocial.ReplyS"
+    "tatus\"\000b\006proto3", 495);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ts.proto", &protobuf_RegisterTypes);
   User::default_instance_ = new User();
-  Status::default_instance_ = new Status();
+  ReplyStatus::default_instance_ = new ReplyStatus();
   Post::default_instance_ = new Post();
   NewPost::default_instance_ = new NewPost();
   User::default_instance_->InitAsDefaultInstance();
-  Status::default_instance_->InitAsDefaultInstance();
+  ReplyStatus::default_instance_->InitAsDefaultInstance();
   Post::default_instance_->InitAsDefaultInstance();
   NewPost::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_ts_2eproto);
@@ -471,90 +472,94 @@ void User::clear_name() {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int Status::kStatFieldNumber;
+const int ReplyStatus::kStatFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-Status::Status()
+ReplyStatus::ReplyStatus()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   SharedCtor();
-  // @@protoc_insertion_point(constructor:tinysocial.Status)
+  // @@protoc_insertion_point(constructor:tinysocial.ReplyStatus)
 }
 
-void Status::InitAsDefaultInstance() {
+void ReplyStatus::InitAsDefaultInstance() {
   _is_default_instance_ = true;
 }
 
-Status::Status(const Status& from)
+ReplyStatus::ReplyStatus(const ReplyStatus& from)
   : ::google::protobuf::Message(),
     _internal_metadata_(NULL) {
   SharedCtor();
   MergeFrom(from);
-  // @@protoc_insertion_point(copy_constructor:tinysocial.Status)
+  // @@protoc_insertion_point(copy_constructor:tinysocial.ReplyStatus)
 }
 
-void Status::SharedCtor() {
+void ReplyStatus::SharedCtor() {
     _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
-  stat_ = 0;
+  stat_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
-Status::~Status() {
-  // @@protoc_insertion_point(destructor:tinysocial.Status)
+ReplyStatus::~ReplyStatus() {
+  // @@protoc_insertion_point(destructor:tinysocial.ReplyStatus)
   SharedDtor();
 }
 
-void Status::SharedDtor() {
+void ReplyStatus::SharedDtor() {
+  stat_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
   }
 }
 
-void Status::SetCachedSize(int size) const {
+void ReplyStatus::SetCachedSize(int size) const {
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = size;
   GOOGLE_SAFE_CONCURRENT_WRITES_END();
 }
-const ::google::protobuf::Descriptor* Status::descriptor() {
+const ::google::protobuf::Descriptor* ReplyStatus::descriptor() {
   protobuf_AssignDescriptorsOnce();
-  return Status_descriptor_;
+  return ReplyStatus_descriptor_;
 }
 
-const Status& Status::default_instance() {
+const ReplyStatus& ReplyStatus::default_instance() {
   if (default_instance_ == NULL) protobuf_AddDesc_ts_2eproto();
   return *default_instance_;
 }
 
-Status* Status::default_instance_ = NULL;
+ReplyStatus* ReplyStatus::default_instance_ = NULL;
 
-Status* Status::New(::google::protobuf::Arena* arena) const {
-  Status* n = new Status;
+ReplyStatus* ReplyStatus::New(::google::protobuf::Arena* arena) const {
+  ReplyStatus* n = new ReplyStatus;
   if (arena != NULL) {
     arena->Own(n);
   }
   return n;
 }
 
-void Status::Clear() {
-// @@protoc_insertion_point(message_clear_start:tinysocial.Status)
-  stat_ = 0;
+void ReplyStatus::Clear() {
+// @@protoc_insertion_point(message_clear_start:tinysocial.ReplyStatus)
+  stat_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
-bool Status::MergePartialFromCodedStream(
+bool ReplyStatus::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:tinysocial.Status)
+  // @@protoc_insertion_point(parse_start:tinysocial.ReplyStatus)
   for (;;) {
     ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional int32 stat = 1;
+      // optional string stat = 1;
       case 1: {
-        if (tag == 8) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &stat_)));
-
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_stat()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->stat().data(), this->stat().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "tinysocial.ReplyStatus.stat"));
         } else {
           goto handle_unusual;
         }
@@ -575,45 +580,56 @@ bool Status::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:tinysocial.Status)
+  // @@protoc_insertion_point(parse_success:tinysocial.ReplyStatus)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:tinysocial.Status)
+  // @@protoc_insertion_point(parse_failure:tinysocial.ReplyStatus)
   return false;
 #undef DO_
 }
 
-void Status::SerializeWithCachedSizes(
+void ReplyStatus::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:tinysocial.Status)
-  // optional int32 stat = 1;
-  if (this->stat() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->stat(), output);
+  // @@protoc_insertion_point(serialize_start:tinysocial.ReplyStatus)
+  // optional string stat = 1;
+  if (this->stat().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->stat().data(), this->stat().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "tinysocial.ReplyStatus.stat");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->stat(), output);
   }
 
-  // @@protoc_insertion_point(serialize_end:tinysocial.Status)
+  // @@protoc_insertion_point(serialize_end:tinysocial.ReplyStatus)
 }
 
-::google::protobuf::uint8* Status::InternalSerializeWithCachedSizesToArray(
+::google::protobuf::uint8* ReplyStatus::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
-  // @@protoc_insertion_point(serialize_to_array_start:tinysocial.Status)
-  // optional int32 stat = 1;
-  if (this->stat() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->stat(), target);
+  // @@protoc_insertion_point(serialize_to_array_start:tinysocial.ReplyStatus)
+  // optional string stat = 1;
+  if (this->stat().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->stat().data(), this->stat().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "tinysocial.ReplyStatus.stat");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->stat(), target);
   }
 
-  // @@protoc_insertion_point(serialize_to_array_end:tinysocial.Status)
+  // @@protoc_insertion_point(serialize_to_array_end:tinysocial.ReplyStatus)
   return target;
 }
 
-int Status::ByteSize() const {
-// @@protoc_insertion_point(message_byte_size_start:tinysocial.Status)
+int ReplyStatus::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:tinysocial.ReplyStatus)
   int total_size = 0;
 
-  // optional int32 stat = 1;
-  if (this->stat() != 0) {
+  // optional string stat = 1;
+  if (this->stat().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::StringSize(
         this->stat());
   }
 
@@ -623,85 +639,116 @@ int Status::ByteSize() const {
   return total_size;
 }
 
-void Status::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:tinysocial.Status)
+void ReplyStatus::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:tinysocial.ReplyStatus)
   if (GOOGLE_PREDICT_FALSE(&from == this)) {
     ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
   }
-  const Status* source = 
-      ::google::protobuf::internal::DynamicCastToGenerated<const Status>(
+  const ReplyStatus* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const ReplyStatus>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:tinysocial.Status)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:tinysocial.ReplyStatus)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:tinysocial.Status)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:tinysocial.ReplyStatus)
     MergeFrom(*source);
   }
 }
 
-void Status::MergeFrom(const Status& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:tinysocial.Status)
+void ReplyStatus::MergeFrom(const ReplyStatus& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:tinysocial.ReplyStatus)
   if (GOOGLE_PREDICT_FALSE(&from == this)) {
     ::google::protobuf::internal::MergeFromFail(__FILE__, __LINE__);
   }
-  if (from.stat() != 0) {
-    set_stat(from.stat());
+  if (from.stat().size() > 0) {
+
+    stat_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.stat_);
   }
 }
 
-void Status::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:tinysocial.Status)
+void ReplyStatus::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:tinysocial.ReplyStatus)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Status::CopyFrom(const Status& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:tinysocial.Status)
+void ReplyStatus::CopyFrom(const ReplyStatus& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:tinysocial.ReplyStatus)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Status::IsInitialized() const {
+bool ReplyStatus::IsInitialized() const {
 
   return true;
 }
 
-void Status::Swap(Status* other) {
+void ReplyStatus::Swap(ReplyStatus* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void Status::InternalSwap(Status* other) {
-  std::swap(stat_, other->stat_);
+void ReplyStatus::InternalSwap(ReplyStatus* other) {
+  stat_.Swap(&other->stat_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
-::google::protobuf::Metadata Status::GetMetadata() const {
+::google::protobuf::Metadata ReplyStatus::GetMetadata() const {
   protobuf_AssignDescriptorsOnce();
   ::google::protobuf::Metadata metadata;
-  metadata.descriptor = Status_descriptor_;
-  metadata.reflection = Status_reflection_;
+  metadata.descriptor = ReplyStatus_descriptor_;
+  metadata.reflection = ReplyStatus_reflection_;
   return metadata;
 }
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
-// Status
+// ReplyStatus
 
-// optional int32 stat = 1;
-void Status::clear_stat() {
-  stat_ = 0;
+// optional string stat = 1;
+void ReplyStatus::clear_stat() {
+  stat_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- ::google::protobuf::int32 Status::stat() const {
-  // @@protoc_insertion_point(field_get:tinysocial.Status.stat)
-  return stat_;
+ const ::std::string& ReplyStatus::stat() const {
+  // @@protoc_insertion_point(field_get:tinysocial.ReplyStatus.stat)
+  return stat_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
- void Status::set_stat(::google::protobuf::int32 value) {
+ void ReplyStatus::set_stat(const ::std::string& value) {
   
-  stat_ = value;
-  // @@protoc_insertion_point(field_set:tinysocial.Status.stat)
+  stat_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:tinysocial.ReplyStatus.stat)
+}
+ void ReplyStatus::set_stat(const char* value) {
+  
+  stat_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:tinysocial.ReplyStatus.stat)
+}
+ void ReplyStatus::set_stat(const char* value, size_t size) {
+  
+  stat_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:tinysocial.ReplyStatus.stat)
+}
+ ::std::string* ReplyStatus::mutable_stat() {
+  
+  // @@protoc_insertion_point(field_mutable:tinysocial.ReplyStatus.stat)
+  return stat_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* ReplyStatus::release_stat() {
+  // @@protoc_insertion_point(field_release:tinysocial.ReplyStatus.stat)
+  
+  return stat_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void ReplyStatus::set_allocated_stat(::std::string* stat) {
+  if (stat != NULL) {
+    
+  } else {
+    
+  }
+  stat_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), stat);
+  // @@protoc_insertion_point(field_set_allocated:tinysocial.ReplyStatus.stat)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -737,7 +784,7 @@ void Post::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  time_ = 0;
+  time_ = GOOGLE_LONGLONG(0);
   posttext_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -781,7 +828,7 @@ Post* Post::New(::google::protobuf::Arena* arena) const {
 void Post::Clear() {
 // @@protoc_insertion_point(message_clear_start:tinysocial.Post)
   name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  time_ = 0;
+  time_ = GOOGLE_LONGLONG(0);
   posttext_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -811,12 +858,12 @@ bool Post::MergePartialFromCodedStream(
         break;
       }
 
-      // optional int32 time = 2;
+      // optional int64 time = 2;
       case 2: {
         if (tag == 16) {
          parse_time:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &time_)));
 
         } else {
@@ -877,9 +924,9 @@ void Post::SerializeWithCachedSizes(
       1, this->name(), output);
   }
 
-  // optional int32 time = 2;
+  // optional int64 time = 2;
   if (this->time() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->time(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->time(), output);
   }
 
   // optional string postText = 3;
@@ -909,9 +956,9 @@ void Post::SerializeWithCachedSizes(
         1, this->name(), target);
   }
 
-  // optional int32 time = 2;
+  // optional int64 time = 2;
   if (this->time() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->time(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->time(), target);
   }
 
   // optional string postText = 3;
@@ -940,10 +987,10 @@ int Post::ByteSize() const {
         this->name());
   }
 
-  // optional int32 time = 2;
+  // optional int64 time = 2;
   if (this->time() != 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->time());
   }
 
@@ -1081,15 +1128,15 @@ void Post::clear_name() {
   // @@protoc_insertion_point(field_set_allocated:tinysocial.Post.name)
 }
 
-// optional int32 time = 2;
+// optional int64 time = 2;
 void Post::clear_time() {
-  time_ = 0;
+  time_ = GOOGLE_LONGLONG(0);
 }
- ::google::protobuf::int32 Post::time() const {
+ ::google::protobuf::int64 Post::time() const {
   // @@protoc_insertion_point(field_get:tinysocial.Post.time)
   return time_;
 }
- void Post::set_time(::google::protobuf::int32 value) {
+ void Post::set_time(::google::protobuf::int64 value) {
   
   time_ = value;
   // @@protoc_insertion_point(field_set:tinysocial.Post.time)

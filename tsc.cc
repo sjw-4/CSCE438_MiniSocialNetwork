@@ -1,7 +1,7 @@
 #include <iostream>
 //#include <memory>
 //#include <thread>
-//#include <vector>
+#include <vector>
 #include <string>
 #include <unistd.h>
 #include <grpc++/grpc++.h>
@@ -23,7 +23,7 @@ using grpc::Status;
 using tinysocial::User;
 using tinysocial::Post;
 using tinysocial::NewPost;
-using tinysocial::Status;
+using tinysocial::ReplyStatus;
 using tinysocial::TinySocial;
 
 class Client : public IClient
@@ -76,6 +76,25 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+IStatus checkForError(std::string msg) {
+    //Checks for errors in the message. If there is an error then the first string sent by
+    //the server in any message will be a number corresponding to the error
+    if(msg == "0")
+        return SUCCESS;
+    else if(msg == "1")
+        return FAILURE_ALREADY_EXISTS;
+    else if(msg == "2")
+        return FAILURE_NOT_EXISTS;
+    else if(msg == "3")
+        return FAILURE_INVALID_USERNAME;
+    else if(msg == "4")
+        return FAILURE_INVALID;
+    else if(msg == "5")
+        return FAILURE_UNKNOWN;
+    else    //This will mean if the string passed is a username (such as in the LIST cmd), all is good
+        return SUCCESS;
+}
+
 int Client::connectTo()
 {
 	// ------------------------------------------------------------
@@ -110,6 +129,69 @@ IReply Client::processCommand(std::string& input)
 	// - JOIN/LEAVE and "<username>" are separated by one space.
 	// ------------------------------------------------------------
 	
+    ClientContext context;
+    IReply myReply;
+
+    if(input == "LIST") {
+        User user;                          //User of current user
+        User users;                         //User to hold sent usernames
+        std::vector<std::string> allUsers;  //Vector to hold all users
+        user.name = username;
+        //Get reader to read all sent usernames
+        std::unique_ptr<ClientReader<User> > reader(stub_->GetList(&context, user));
+        while(reader->Read(&users)) {
+            allUsers.push_back(users.name());
+        }
+        //begin setting values in IReply
+        myReply.grpc_status = reader->Finish();
+        myReply.all_users = allUsers;
+        myReply.comm_status = checkForError(allUsers.at(0));
+        //The server inserts an END_OF_FOLLOWERS string to indicate where the list goes from followers to all other users
+        for(int i = 0; i < allUsers.size(); i++) {
+            if(allUsers.at(i) == "END_OF_FOLLOWERS")
+                break;
+            else
+                myReply.following_users.push_back(allUsers.at(i));
+        }
+    }
+    else if(strncmp(input, "FOLLOW ", 7) == 0) {
+        User users;             //Holds the username of the poster and who they want to follow
+        ReplyStatus rStatus;    //Holds the response from the server
+        //Concatinate the users name with who they want to follow
+        users.name = username + "|" + input.substr(7, input.size() - 7);
+        myReply.grpc_status = stub_->Follow(&context, users, rStatus);
+        myReply.comm_status = checkForError(rStatus.stat());
+    }
+    else if(strncmp(input, "UNFOLLOW ", 9) == 0) {
+        User users;
+        ReplyStatus rStatus;
+        //Concatinate the users name with who they want to unfollow
+        users.name = username + "|" + input.substr(9, input.size() - 9);
+        myReply.grpc_status = stub_->Unfollow(&context, users, rStatus);
+        myReply.comm_status = checkForError(rStatus.stat());
+    }
+    else if(input == "TIMELINE") {
+        User user;
+        Post post;
+        user.name = username;
+        std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
+        //Set a default value for comm_status, since this error should never happen for this command
+        myReply.comm_status = FAILURE_ALREADY_EXISTS;
+        while(reader->Read(&post)) {
+            //If the default value is still set, check the first passed name for errors
+            if(myReply.comm_status == FAILURE_ALREADY_EXISTS)
+                myReply.comm_status = checkForError(post.name());
+            //If all is good, go ahead and print out the timeline for the user
+            if(myReply.comm_status == SUCCESS) {
+                time_t tempTime = post.time();
+                displayPostMessage(post.name(), post.posttext(), tempTime);
+            }
+        }
+        myReply.grpc_status = reader->Finish();
+    }
+
+    return myReply;
+
     // ------------------------------------------------------------
 	// GUIDE 2:
 	// Then, you should create a variable of IReply structure
@@ -140,9 +222,6 @@ IReply Client::processCommand(std::string& input)
     // For the command "LIST", you should set both "all_users" and 
     // "following_users" member variable of IReply.
 	// ------------------------------------------------------------
-    
-    IReply ire;
-    return ire;
 }
 
 void Client::processTimeline()

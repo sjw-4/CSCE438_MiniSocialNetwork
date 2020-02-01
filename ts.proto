@@ -4,21 +4,21 @@ package tinysocial;
 
 service TinySocial {
     rpc GetList(User) returns (stream User) {}
-    rpc Unfollow(stream User) returns (Status) {}
-    rpc Follow(stream User) returns (Status) {}
+    rpc Unfollow(User) returns (ReplyStatus) {}
+    rpc Follow(User) returns (ReplyStatus) {}
     rpc GetTimeline(User) returns (stream Post) {}
-    rpc PostTimeline(NewPost) returns (Status) {}
+    rpc PostTimeline(NewPost) returns (ReplyStatus) {}
 }
 
 message User {
     string name = 1;
 }
-message Status {
-    int32 stat = 1;
+message ReplyStatus {
+    string stat = 1;
 }
 message Post {
     string name = 1;
-    int32 time = 2;
+    int64 time = 2;
     string postText = 3;
 }
 message NewPost {
