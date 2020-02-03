@@ -60,12 +60,14 @@ class TinySocialImpl final : public TinySocial::Service {
 private:
     std::vector<UserInfo> allUsers;
 
+    //TODO: change return val to bool and add &UserInfo to arguments so it can return false if not found
     UserInfo getUser(std::string _username) {
         for(int i = 0; i < allUsers.size(); i++) {
             if(allUsers.at(i).username == _username)
                 return allUsers.at(i);
         }
-        return NULL;
+        UserInfo empty;
+        return empty;
     }
     int getUserIndex(std::string _username) {
         for(int i = 0; i < allUsers.size(); i++) {
