@@ -394,20 +394,9 @@ class NewPost : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::std::string* release_postfrom();
   void set_allocated_postfrom(::std::string* postfrom);
 
-  // optional string postTo = 2;
-  void clear_postto();
-  static const int kPostToFieldNumber = 2;
-  const ::std::string& postto() const;
-  void set_postto(const ::std::string& value);
-  void set_postto(const char* value);
-  void set_postto(const char* value, size_t size);
-  ::std::string* mutable_postto();
-  ::std::string* release_postto();
-  void set_allocated_postto(::std::string* postto);
-
-  // optional string postText = 3;
+  // optional string postText = 2;
   void clear_posttext();
-  static const int kPostTextFieldNumber = 3;
+  static const int kPostTextFieldNumber = 2;
   const ::std::string& posttext() const;
   void set_posttext(const ::std::string& value);
   void set_posttext(const char* value);
@@ -422,7 +411,6 @@ class NewPost : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   bool _is_default_instance_;
   ::google::protobuf::internal::ArenaStringPtr postfrom_;
-  ::google::protobuf::internal::ArenaStringPtr postto_;
   ::google::protobuf::internal::ArenaStringPtr posttext_;
   mutable int _cached_size_;
   friend void  protobuf_AddDesc_ts_2eproto();
@@ -686,51 +674,7 @@ inline void NewPost::set_allocated_postfrom(::std::string* postfrom) {
   // @@protoc_insertion_point(field_set_allocated:tinysocial.NewPost.postFrom)
 }
 
-// optional string postTo = 2;
-inline void NewPost::clear_postto() {
-  postto_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline const ::std::string& NewPost::postto() const {
-  // @@protoc_insertion_point(field_get:tinysocial.NewPost.postTo)
-  return postto_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void NewPost::set_postto(const ::std::string& value) {
-  
-  postto_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:tinysocial.NewPost.postTo)
-}
-inline void NewPost::set_postto(const char* value) {
-  
-  postto_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:tinysocial.NewPost.postTo)
-}
-inline void NewPost::set_postto(const char* value, size_t size) {
-  
-  postto_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:tinysocial.NewPost.postTo)
-}
-inline ::std::string* NewPost::mutable_postto() {
-  
-  // @@protoc_insertion_point(field_mutable:tinysocial.NewPost.postTo)
-  return postto_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline ::std::string* NewPost::release_postto() {
-  // @@protoc_insertion_point(field_release:tinysocial.NewPost.postTo)
-  
-  return postto_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
-inline void NewPost::set_allocated_postto(::std::string* postto) {
-  if (postto != NULL) {
-    
-  } else {
-    
-  }
-  postto_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), postto);
-  // @@protoc_insertion_point(field_set_allocated:tinysocial.NewPost.postTo)
-}
-
-// optional string postText = 3;
+// optional string postText = 2;
 inline void NewPost::clear_posttext() {
   posttext_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }

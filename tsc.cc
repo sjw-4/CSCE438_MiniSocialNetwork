@@ -136,7 +136,7 @@ IReply Client::processCommand(std::string& input)
         User user;                          //User of current user
         User users;                         //User to hold sent usernames
         std::vector<std::string> allUsers;  //Vector to hold all users
-        user.name = username;
+        user.set_name(username);
         //Get reader to read all sent usernames
         std::unique_ptr<ClientReader<User> > reader(stub_->GetList(&context, user));
         while(reader->Read(&users)) {
@@ -144,12 +144,17 @@ IReply Client::processCommand(std::string& input)
         }
         //begin setting values in IReply
         myReply.grpc_status = reader->Finish();
-        myReply.all_users = allUsers;
         myReply.comm_status = checkForError(allUsers.at(0));
         //The server inserts an END_OF_FOLLOWERS string to indicate where the list goes from followers to all other users
         for(int i = 0; i < allUsers.size(); i++) {
-            if(allUsers.at(i) == "END_OF_FOLLOWERS")
+            if(allUsers.at(i) == "END_OF_FOLLOWERS") {
+                i++;
+                while(i < allUsers.size()) {
+                    myReply.all_users.push_back(allUsers.at(i));
+                    i++;
+                }
                 break;
+            }
             else
                 myReply.following_users.push_back(allUsers.at(i));
         }
@@ -158,7 +163,7 @@ IReply Client::processCommand(std::string& input)
         User users;             //Holds the username of the poster and who they want to follow
         ReplyStatus rStatus;    //Holds the response from the server
         //Concatinate the users name with who they want to follow
-        users.name = username + "|" + input.substr(7, input.size() - 7);
+        users.set_name(username + "|" + input.substr(7, input.size() - 7));
         myReply.grpc_status = stub_->Follow(&context, users, rStatus);
         myReply.comm_status = checkForError(rStatus.stat());
     }
@@ -166,14 +171,14 @@ IReply Client::processCommand(std::string& input)
         User users;
         ReplyStatus rStatus;
         //Concatinate the users name with who they want to unfollow
-        users.name = username + "|" + input.substr(9, input.size() - 9);
+        users.set_name(username + "|" + input.substr(7, input.size() - 7));
         myReply.grpc_status = stub_->Unfollow(&context, users, rStatus);
         myReply.comm_status = checkForError(rStatus.stat());
     }
     else if(input == "TIMELINE") {
         User user;
         Post post;
-        user.name = username;
+        users.set_name(username);
         std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
         //Set a default value for comm_status, since this error should never happen for this command
         myReply.comm_status = FAILURE_ALREADY_EXISTS;
@@ -242,4 +247,16 @@ void Client::processTimeline()
     // and you can terminate the client program by pressing
     // CTRL-C (SIGINT)
 	// ------------------------------------------------------------
+
+    for(;;) {
+        ClientContext context;
+        NewPost post;
+        ReplyStatus rStatus;
+        post.set_postfrom(username);
+        post.set_posttext(getPostMessage());
+        Status stat = stub_->PostTimeline(&context, post, rStatus);
+        if(checkForError(rStatus) != SUCCESS) {
+            std::cout << "Debug:tsc:processTimeline:Error from server" << std::endl;
+        }
+    }
 }

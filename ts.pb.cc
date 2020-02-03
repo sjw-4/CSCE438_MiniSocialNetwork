@@ -92,9 +92,8 @@ void protobuf_AssignDesc_ts_2eproto() {
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Post, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Post, _is_default_instance_));
   NewPost_descriptor_ = file->message_type(3);
-  static const int NewPost_offsets_[3] = {
+  static const int NewPost_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NewPost, postfrom_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NewPost, postto_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NewPost, posttext_),
   };
   NewPost_reflection_ =
@@ -155,16 +154,17 @@ void protobuf_AddDesc_ts_2eproto() {
     "\n\010ts.proto\022\ntinysocial\"\024\n\004User\022\014\n\004name\030\001"
     " \001(\t\"\033\n\013ReplyStatus\022\014\n\004stat\030\001 \001(\t\"4\n\004Pos"
     "t\022\014\n\004name\030\001 \001(\t\022\014\n\004time\030\002 \001(\003\022\020\n\010postTex"
-    "t\030\003 \001(\t\"=\n\007NewPost\022\020\n\010postFrom\030\001 \001(\t\022\016\n\006"
-    "postTo\030\002 \001(\t\022\020\n\010postText\030\003 \001(\t2\246\002\n\nTinyS"
-    "ocial\0221\n\007GetList\022\020.tinysocial.User\032\020.tin"
-    "ysocial.User\"\0000\001\0227\n\010Unfollow\022\020.tinysocia"
-    "l.User\032\027.tinysocial.ReplyStatus\"\000\0225\n\006Fol"
-    "low\022\020.tinysocial.User\032\027.tinysocial.Reply"
-    "Status\"\000\0225\n\013GetTimeline\022\020.tinysocial.Use"
-    "r\032\020.tinysocial.Post\"\0000\001\022>\n\014PostTimeline\022"
-    "\023.tinysocial.NewPost\032\027.tinysocial.ReplyS"
-    "tatus\"\000b\006proto3", 495);
+    "t\030\003 \001(\t\"-\n\007NewPost\022\020\n\010postFrom\030\001 \001(\t\022\020\n\010"
+    "postText\030\002 \001(\t2\246\002\n\nTinySocial\0221\n\007GetList"
+    "\022\020.tinysocial.User\032\020.tinysocial.User\"\0000\001"
+    "\0227\n\010Unfollow\022\020.tinysocial.User\032\027.tinysoc"
+    "ial.ReplyStatus\"\000\0225\n\006Follow\022\020.tinysocial"
+    ".User\032\027.tinysocial.ReplyStatus\"\000\0225\n\013GetT"
+    "imeline\022\020.tinysocial.User\032\020.tinysocial.P"
+    "ost\"\0000\001\022>\n\014PostTimeline\022\023.tinysocial.New"
+    "Post\032\027.tinysocial.ReplyStatus\"\000B,\n\022io.gr"
+    "pc.tinySocialB\017TinySocialProtoP\001\242\002\002TSb\006p"
+    "roto3", 525);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "ts.proto", &protobuf_RegisterTypes);
   User::default_instance_ = new User();
@@ -1192,7 +1192,6 @@ void Post::clear_posttext() {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int NewPost::kPostFromFieldNumber;
-const int NewPost::kPostToFieldNumber;
 const int NewPost::kPostTextFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -1219,7 +1218,6 @@ void NewPost::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   postfrom_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  postto_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   posttext_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -1230,7 +1228,6 @@ NewPost::~NewPost() {
 
 void NewPost::SharedDtor() {
   postfrom_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  postto_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   posttext_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (this != default_instance_) {
   }
@@ -1264,7 +1261,6 @@ NewPost* NewPost::New(::google::protobuf::Arena* arena) const {
 void NewPost::Clear() {
 // @@protoc_insertion_point(message_clear_start:tinysocial.NewPost)
   postfrom_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  postto_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   posttext_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
@@ -1290,30 +1286,13 @@ bool NewPost::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(18)) goto parse_postTo;
+        if (input->ExpectTag(18)) goto parse_postText;
         break;
       }
 
-      // optional string postTo = 2;
+      // optional string postText = 2;
       case 2: {
         if (tag == 18) {
-         parse_postTo:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_postto()));
-          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->postto().data(), this->postto().length(),
-            ::google::protobuf::internal::WireFormatLite::PARSE,
-            "tinysocial.NewPost.postTo"));
-        } else {
-          goto handle_unusual;
-        }
-        if (input->ExpectTag(26)) goto parse_postText;
-        break;
-      }
-
-      // optional string postText = 3;
-      case 3: {
-        if (tag == 26) {
          parse_postText:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_posttext()));
@@ -1362,24 +1341,14 @@ void NewPost::SerializeWithCachedSizes(
       1, this->postfrom(), output);
   }
 
-  // optional string postTo = 2;
-  if (this->postto().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->postto().data(), this->postto().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "tinysocial.NewPost.postTo");
-    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      2, this->postto(), output);
-  }
-
-  // optional string postText = 3;
+  // optional string postText = 2;
   if (this->posttext().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->posttext().data(), this->posttext().length(),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
       "tinysocial.NewPost.postText");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
-      3, this->posttext(), output);
+      2, this->posttext(), output);
   }
 
   // @@protoc_insertion_point(serialize_end:tinysocial.NewPost)
@@ -1399,18 +1368,7 @@ void NewPost::SerializeWithCachedSizes(
         1, this->postfrom(), target);
   }
 
-  // optional string postTo = 2;
-  if (this->postto().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->postto().data(), this->postto().length(),
-      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "tinysocial.NewPost.postTo");
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->postto(), target);
-  }
-
-  // optional string postText = 3;
+  // optional string postText = 2;
   if (this->posttext().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->posttext().data(), this->posttext().length(),
@@ -1418,7 +1376,7 @@ void NewPost::SerializeWithCachedSizes(
       "tinysocial.NewPost.postText");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        3, this->posttext(), target);
+        2, this->posttext(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:tinysocial.NewPost)
@@ -1436,14 +1394,7 @@ int NewPost::ByteSize() const {
         this->postfrom());
   }
 
-  // optional string postTo = 2;
-  if (this->postto().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->postto());
-  }
-
-  // optional string postText = 3;
+  // optional string postText = 2;
   if (this->posttext().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -1482,10 +1433,6 @@ void NewPost::MergeFrom(const NewPost& from) {
 
     postfrom_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.postfrom_);
   }
-  if (from.postto().size() > 0) {
-
-    postto_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.postto_);
-  }
   if (from.posttext().size() > 0) {
 
     posttext_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.posttext_);
@@ -1517,7 +1464,6 @@ void NewPost::Swap(NewPost* other) {
 }
 void NewPost::InternalSwap(NewPost* other) {
   postfrom_.Swap(&other->postfrom_);
-  postto_.Swap(&other->postto_);
   posttext_.Swap(&other->posttext_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
   std::swap(_cached_size_, other->_cached_size_);
@@ -1578,51 +1524,7 @@ void NewPost::clear_postfrom() {
   // @@protoc_insertion_point(field_set_allocated:tinysocial.NewPost.postFrom)
 }
 
-// optional string postTo = 2;
-void NewPost::clear_postto() {
-  postto_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
- const ::std::string& NewPost::postto() const {
-  // @@protoc_insertion_point(field_get:tinysocial.NewPost.postTo)
-  return postto_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
- void NewPost::set_postto(const ::std::string& value) {
-  
-  postto_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:tinysocial.NewPost.postTo)
-}
- void NewPost::set_postto(const char* value) {
-  
-  postto_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:tinysocial.NewPost.postTo)
-}
- void NewPost::set_postto(const char* value, size_t size) {
-  
-  postto_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:tinysocial.NewPost.postTo)
-}
- ::std::string* NewPost::mutable_postto() {
-  
-  // @@protoc_insertion_point(field_mutable:tinysocial.NewPost.postTo)
-  return postto_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
- ::std::string* NewPost::release_postto() {
-  // @@protoc_insertion_point(field_release:tinysocial.NewPost.postTo)
-  
-  return postto_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-}
- void NewPost::set_allocated_postto(::std::string* postto) {
-  if (postto != NULL) {
-    
-  } else {
-    
-  }
-  postto_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), postto);
-  // @@protoc_insertion_point(field_set_allocated:tinysocial.NewPost.postTo)
-}
-
-// optional string postText = 3;
+// optional string postText = 2;
 void NewPost::clear_posttext() {
   posttext_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }

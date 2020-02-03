@@ -1,5 +1,10 @@
 syntax = "proto3";
 
+option java_multiple_files = true;
+option java_package = "io.grpc.tinySocial";
+option java_outer_classname = "TinySocialProto";
+option objc_class_prefix = "TS";
+
 package tinysocial;
 
 service TinySocial {
@@ -23,6 +28,5 @@ message Post {
 }
 message NewPost {
     string postFrom = 1;
-    string postTo = 2;
-    string postText = 3;
+    string postText = 2;
 }
