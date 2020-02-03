@@ -17,6 +17,7 @@ using tinysocial::User;
 using tinysocial::ReplyStatus;
 using tinysocial::Post;
 using tinysocial::NewPost;
+using tinysocial::TinySocial;
 
 
 /*#include <grpc/grpc.h>
