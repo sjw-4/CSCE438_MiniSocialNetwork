@@ -6,13 +6,13 @@
 #include <unistd.h>
 #include <grpc++/grpc++.h>
 #include "client.h"
-
 #include "ts.grpc.pb.h"
+/*
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
-#include <grpcpp/security/credentials.h>
+#include <grpcpp/security/credentials.h>*/
 
 using grpc::Channel;
 using grpc::ClientContext;
@@ -107,7 +107,8 @@ int Client::connectTo()
     // Please refer to gRpc tutorial how to create a stub.
 	// ------------------------------------------------------------
 
-    stub_(TinySocial::Stub(grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials()));)
+    std::shared_ptr<Channel> channel = grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials());
+    stub_ = TinySocial::NewStub(channel);
 
     return 1; // return 1 if success, otherwise return -1
 }
@@ -159,26 +160,26 @@ IReply Client::processCommand(std::string& input)
                 myReply.following_users.push_back(allUsers.at(i));
         }
     }
-    else if(strncmp(input, "FOLLOW ", 7) == 0) {
+    else if(strncmp(input.c_str(), "FOLLOW ", 7) == 0) {
         User users;             //Holds the username of the poster and who they want to follow
         ReplyStatus rStatus;    //Holds the response from the server
         //Concatinate the users name with who they want to follow
         users.set_name(username + "|" + input.substr(7, input.size() - 7));
-        myReply.grpc_status = stub_->Follow(&context, users, rStatus);
+        myReply.grpc_status = stub_->Follow(&context, users, &rStatus);
         myReply.comm_status = checkForError(rStatus.stat());
     }
-    else if(strncmp(input, "UNFOLLOW ", 9) == 0) {
+    else if(strncmp(input.c_str(), "UNFOLLOW ", 9) == 0) {
         User users;
         ReplyStatus rStatus;
         //Concatinate the users name with who they want to unfollow
         users.set_name(username + "|" + input.substr(7, input.size() - 7));
-        myReply.grpc_status = stub_->Unfollow(&context, users, rStatus);
+        myReply.grpc_status = stub_->Unfollow(&context, users, &rStatus);
         myReply.comm_status = checkForError(rStatus.stat());
     }
     else if(input == "TIMELINE") {
         User user;
         Post post;
-        users.set_name(username);
+        user.set_name(username);
         std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
         //Set a default value for comm_status, since this error should never happen for this command
         myReply.comm_status = FAILURE_ALREADY_EXISTS;
@@ -254,8 +255,8 @@ void Client::processTimeline()
         ReplyStatus rStatus;
         post.set_postfrom(username);
         post.set_posttext(getPostMessage());
-        Status stat = stub_->PostTimeline(&context, post, rStatus);
-        if(checkForError(rStatus) != SUCCESS) {
+        Status stat = stub_->PostTimeline(&context, post, &rStatus);
+        if(checkForError(rStatus.stat()) != SUCCESS) {
             std::cout << "Debug:tsc:processTimeline:Error from server" << std::endl;
         }
     }
