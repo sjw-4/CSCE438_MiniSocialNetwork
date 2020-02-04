@@ -128,7 +128,7 @@ public:
         std::string curUsername;
         std::string toFollow;
         for(int i = 0; i < bothUsers.size(); i++) {
-            if(bothUsers.at(i) == "|") {
+            if(bothUsers.at(i) == '|') {
                 curUsername = bothUsers.substr(0, i);
                 toFollow = bothUsers.substr(i + 1, bothUsers.size() - (i + 1));
                 break;
@@ -158,9 +158,9 @@ public:
         return Status::OK;
     }
     Status PostTimeline(ServerContext* context, const NewPost* post, ReplyStatus* replyStat) override {
-        int curUserIndex = getUserIndex(post->postFrom());
-        postInfo nPost;
-        nPost.post = post->postText();
+        int curUserIndex = getUserIndex(post->PostFrom());
+        PostInfo nPost;
+        nPost.post = post->PostText();
         nPost.pTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         allUsers.at(2).posts.push_back(nPost); //check right here hardcoded the .at
         replyStat->set_stat(0);
