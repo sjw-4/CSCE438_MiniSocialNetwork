@@ -197,6 +197,9 @@ IReply Client::processCommand(std::string& input)
         std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
         //Set a default value for comm_status, since this error should never happen for this command
         bool checkedFistMsg = false;
+        //Set default val to success, so a user without anything in their timeline (and would thus skip the loop)
+        //can still get to the timeline functionality
+        myReply.comm_status = SUCCESS;
         while(reader->Read(&post)) {
             //If the default value is still set, check the first passed name for errors
             if(!checkedFistMsg) {
