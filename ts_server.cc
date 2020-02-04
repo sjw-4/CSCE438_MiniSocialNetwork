@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::cout << "debug:made it here" std::endl;
+    std::cout << "debug:made it here" << std::endl;
 
     runServer(argv[0]);
 
