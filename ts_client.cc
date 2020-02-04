@@ -196,11 +196,13 @@ IReply Client::processCommand(std::string& input)
         user.set_name(username);
         std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
         //Set a default value for comm_status, since this error should never happen for this command
-        myReply.comm_status = FAILURE_ALREADY_EXISTS;
+        bool checkedFistMsg = false;
         while(reader->Read(&post)) {
             //If the default value is still set, check the first passed name for errors
-            if(myReply.comm_status == FAILURE_ALREADY_EXISTS)
+            if(!checkedFistMsg) {
                 myReply.comm_status = checkForError(post.name());
+                checkedFistMsg = true;
+            }
             //If all is good, go ahead and print out the timeline for the user
             if(myReply.comm_status == SUCCESS) {
                 time_t tempTime = post.time();
