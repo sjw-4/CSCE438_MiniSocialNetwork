@@ -199,24 +199,53 @@ public:
         return Status::OK;
     }
     Status GetTimeline(ServerContext* context, const User* user, ServerWriter<Post>* writer) override {
-        //Temporary function to test the program with
-        Post temp;
-        temp.set_name("temp");
-        temp.set_posttext("tempText");
-        temp.set_time(123456);
-        Post& tempR = temp;
-        writer->Write(tempR);
+        //Get the current user info
+        UserInfo curUser;
+        if(getUser(user->name(), curUser) == -1) {
+            Post temp; temp.set_name("2"); temp.set_posttext("2"); temp.set_time(2);
+            Post& tempR = temp;
+            writer->Write(tempR);
+            return Status::OK;
+        }
+        //Send the most recent 20 posts to the client
+        int i = 0;
+        for(const Post& p : curUser.posts) {
+            if(i == 20)
+                break;
+            writer->Write(p);
+            i++;
+        }
+        //All done, send status
         return Status::OK;
     }
     Status PostTimeline(ServerContext* context, const NewPost* post, ReplyStatus* replyStat) override {
-        /*int curUserIndex = getUserIndex(post->postFrom());
-        PostInfo nPost;
-        nPost.post = post->postText();
-        nPost.pTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        allUsers.at(2).posts.push_back(nPost); //check right here hardcoded the .at*/
-
-        //Temporary function to test the program with
-        replyStat->set_stat(0);
+        NewPost np = post;
+        User curUser;
+        //Find the user who is posting
+        if(getUser(post->postFrom(), curUser) == -1) {
+            replyStat->set_stat("2");
+            return Status::OK;
+        }
+        //Create a new Post variable to store the post info
+        Post np;
+        np.set_name(curUser.name);
+        np.set_posttext(post->postText());
+        np.set_time(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+        //Add post to the users list of post
+        curUser.posts.insert(curUser.posts.begin(), np);
+        //Add new posts to followers lists of posts
+        for(std::string f : curUser.followers) {
+            int followerIndex = getUserIndex(f);
+            if(followerIndex != -1) {
+                allUsers.at(followerIndex).posts.insert(follower.posts.begin(), np);
+            }
+        }
+        //Remove curUser from allUsers and replace with our update version
+        int curUserIndex = getUserIndex(curUser.name);
+        allUsers.erase(allUsers.begin() + curUserIndex);
+        allUsers.push_back(curUser);
+        //All done, set and return status
+        replyStat->set_stat("0");
         return Status::OK;
     }
 };
