@@ -81,7 +81,7 @@ public:
     Status GetList(ServerContext* context, const User* user, ServerWriter<User>* writer) override {
         UserInfo curUser = getUser(user->name());
 		UserInfo nullCheck;
-        User signalUser;
+        User& signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
         if(&curUser == nullptr) {
             signalUser.set_name("2");
@@ -89,7 +89,8 @@ public:
             return Status::OK;
         }
         for(int i = 0; i < curUser.followers.size(); i++) {
-            writer->Write(getUser(curUser.followers.at(i)));
+            UserInfo& temp = getUser(curUser.followers.at(i));
+            writer->Write(temp);
         }
         writer->Write(signalUser);
         for(int i = 0; i < allUsers.size(); i++) {
@@ -154,7 +155,8 @@ public:
         //Temporary function to test the program with
         int curUserIndex = getUserIndex(user->name());
         for(int i = 0; i < allUsers.at(i).posts.size(); i++) {
-            writer->Write(allUsers.at(i).posts.at(i));
+            UserInfo& temp = allUsers.at(i).posts.at(i);
+            writer->Write(temp);
         }
         return Status::OK;
     }
