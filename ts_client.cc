@@ -109,6 +109,20 @@ int Client::connectTo()
 
     std::shared_ptr<Channel> channel = grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials());
     stub_ = TinySocial::NewStub(channel);
+    ClientContext context;
+    User curUser; curUser.set_name(username);
+    ReplyStatus rStat;
+    Status stat = stub_->SignIn(&context, curUser, &rStat);
+    if(rStat.stat() == "1") {
+        //User exists, consider writing that they have signed in
+    }
+    else if(rStat.stat() == "2") {
+        //User is new, consider writing a welcom message
+    }
+    else {
+        //Something has gone wrong, exit
+        exit(1);
+    }
 
     return 1; // return 1 if success, otherwise return -1
 }

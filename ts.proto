@@ -8,6 +8,7 @@ option objc_class_prefix = "TS";
 package tinysocial;
 
 service TinySocial {
+    rpc SignIn(User) returns (ReplyStatus) {}
     rpc GetList(User) returns (stream User) {}
     rpc Unfollow(User) returns (ReplyStatus) {}
     rpc Follow(User) returns (ReplyStatus) {}
@@ -23,8 +24,8 @@ message ReplyStatus {
 }
 message Post {
     string name = 1;
-    int64 time = 2;
-    string postText = 3;
+    string postText = 2;
+    int64 time = 3;
 }
 message NewPost {
     string postFrom = 1;
