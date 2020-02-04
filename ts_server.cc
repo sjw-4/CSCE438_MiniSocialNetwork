@@ -236,7 +236,7 @@ public:
         for(std::string f : curUser.followers) {
             int followerIndex = getUserIndex(f);
             if(followerIndex != -1) {
-                allUsers.at(followerIndex).posts.insert(f.posts.begin(), np);
+                allUsers.at(followerIndex).posts.insert(allUsers.at(followerIndex).posts.begin(), np);
             }
         }
         //Remove curUser from allUsers and replace with our update version
