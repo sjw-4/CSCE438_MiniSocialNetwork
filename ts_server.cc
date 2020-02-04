@@ -83,16 +83,27 @@ public:
 		UserInfo nullCheck;
         User signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
-        if(&curUser == nullptr) {
+        if(curUser == nullCheck) {
             signalUser.set_name("2");
-            writer->Write(signalUser);
+            const User& signalUserR = signalUser;
+            writer->Write(signalUserR);
             return Status::OK;
         }
         for(int i = 0; i < curUser.followers.size(); i++) {
-            writer->Write(getUser(curUser.followers.at(i)));
+            User temp;
+            temp.set_name(curUser.followers.at(i));
+            const User& tempR = temp;
+            writer->Write(tempR);
         }
-            if(curUser.username != allUsers.at(i).username)
-                writer->Write(allUsers.at(i));
+        const User& signalUserR = signalUser;
+        writer->Write(signalUserR);
+        for(int i = 0; i < allUsers.size(); i++) {
+            if(curUser.username != allUsers.at(i).username) {
+                User temp;
+                temp.set_name(allUsers.at(i));
+                const User& tempR = temp;
+                writer->Write(tempR);
+            }
         }
 
         return Status::OK;
@@ -151,8 +162,12 @@ public:
     Status GetTimeline(ServerContext* context, const User* user, ServerWriter<Post>* writer) override {
         //Temporary function to test the program with
         int curUserIndex = getUserIndex(user->name());
-        for(int i = 0; i < allUsers.at(i).posts.size(); i++) {
-            writer->Write(allUsers.at(i).posts.at(i));
+        for(int i = 0; i < allUsers.at(curUserIndex).posts.size(); i++) {
+            Post temp;
+            temp.set_postText(allUsers.at(i).posts.at(i).post);
+            temp.set_postFrom(allUsers.at(i).username);
+            const Post& tempR = temp;
+            writer->Write(tempR);
         }
         return Status::OK;
     }
