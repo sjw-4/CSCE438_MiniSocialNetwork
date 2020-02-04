@@ -82,7 +82,7 @@ public:
         UserInfo curUser = getUser(user->name());
         User signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
-        if(curUser == null) {
+        if(curUser == NULL) {
             signalUser.set_name("2");
             writer->Write(signalUser);
             return Status::OK;
