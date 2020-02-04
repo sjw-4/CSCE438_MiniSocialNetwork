@@ -82,7 +82,7 @@ public:
         UserInfo curUser = getUser(user->name());
         User signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
-        if(!curUser) {
+        if(curUser == null) {
             signalUser.set_name("2");
             writer->Write(signalUser);
             return Status::OK;
@@ -103,7 +103,7 @@ public:
         std::string curUsername;
         std::string toUnfollow;
         for(int i = 0; i < bothUsers.size(); i++) {
-            if(bothUsers.at(i) == "|") {
+            if(bothUsers.at(i) == '|') {
                 curUsername = bothUsers.substr(0, i);
                 toUnfollow = bothUsers.substr(i + 1, bothUsers.size() - (i + 1));
                 break;
