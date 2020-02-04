@@ -219,16 +219,16 @@ public:
         return Status::OK;
     }
     Status PostTimeline(ServerContext* context, const NewPost* post, ReplyStatus* replyStat) override {
-        User curUser;
+        UserInfo curUser;
         //Find the user who is posting
-        if(getUser(post->postFrom(), curUser) == -1) {
+        if(getUser(post->postfrom(), curUser) == -1) {
             replyStat->set_stat("2");
             return Status::OK;
         }
         //Create a new Post variable to store the post info
         Post np;
         np.set_name(curUser.name);
-        np.set_posttext(post->postText());
+        np.set_posttext(post->posttext());
         np.set_time(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
         //Add post to the users list of post
         curUser.posts.insert(curUser.posts.begin(), np);
