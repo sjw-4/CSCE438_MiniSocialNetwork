@@ -89,7 +89,7 @@ public:
             return Status::OK;
         }
         for(int i = 0; i < curUser.followers.size(); i++) {
-            UserInfo& temp = getUser(curUser.followers.at(i));
+            const UserInfo& temp = getUser(curUser.followers.at(i));
             writer->Write(temp);
         }
         writer->Write(signalUser);
