@@ -117,7 +117,7 @@ public:
                     replyStat->set_stat(2);
                     return Status::OK;
                 }
-                allUsers.at(curIndex).following.erase(i);
+                allUsers.at(curIndex).following.erase(following.begin() + i);
                 replyStat->set_stat(0);
                 return Status::OK;
             }
