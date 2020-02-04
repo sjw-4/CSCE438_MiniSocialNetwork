@@ -219,7 +219,6 @@ public:
         return Status::OK;
     }
     Status PostTimeline(ServerContext* context, const NewPost* post, ReplyStatus* replyStat) override {
-        NewPost np = post;
         User curUser;
         //Find the user who is posting
         if(getUser(post->postFrom(), curUser) == -1) {
