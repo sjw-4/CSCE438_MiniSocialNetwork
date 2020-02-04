@@ -39,6 +39,11 @@ private:
                 return true;
             }
         }
+        std::cout << "DEBUG: user - " + _name + ", not found. All users: " << std::endl;
+        for(UserInfo u : allUsers) {
+            std::cout << u.name + ", ";
+        }
+        std::cout << std::endl;
         return false;
     }
     
@@ -270,8 +275,6 @@ int main(int argc, char** argv) {
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }
-
-    std::cout << "debug:made it here" << std::endl;
 
     runServer("0.0.0.0:" + port);
 
