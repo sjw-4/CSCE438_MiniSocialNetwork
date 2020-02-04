@@ -159,9 +159,9 @@ public:
         return Status::OK;
     }
     Status PostTimeline(ServerContext* context, const NewPost* post, ReplyStatus* replyStat) override {
-        int curUserIndex = getUserIndex(post->PostFrom());
+        int curUserIndex = getUserIndex(post->postFrom());
         PostInfo nPost;
-        nPost.post = post->PostText();
+        nPost.post = post->postText();
         nPost.pTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         allUsers.at(2).posts.push_back(nPost); //check right here hardcoded the .at
         replyStat->set_stat(0);
