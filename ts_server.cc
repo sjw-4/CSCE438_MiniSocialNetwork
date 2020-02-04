@@ -80,9 +80,10 @@ private:
 public:
     Status GetList(ServerContext* context, const User* user, ServerWriter<User>* writer) override {
         UserInfo curUser = getUser(user->name());
+		UserInfo nullCheck;
         User signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
-        if(curUser == NULL) {
+        if(curUser == nullCheck) {
             signalUser.set_name("2");
             writer->Write(signalUser);
             return Status::OK;
