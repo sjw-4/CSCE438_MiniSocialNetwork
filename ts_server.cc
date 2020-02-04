@@ -146,6 +146,18 @@ public:
         if(followersIndex != -1) {
             unfollowUser.followers.erase(unfollowUser.followers.begin() + followersIndex);
         }
+        //Update the users timeline to remove posts from toUnfollow
+        int i = 0;
+        int postSize = curUser.posts.size();
+        while(i < postSize) {
+            if(curUser.posts.at(i).name == unfollowerUser.name) {
+                curuser.posts.erase(curUser.posts.begin() + i);
+                postSize--;
+            }
+            else {
+                i++;
+            }
+        }
         //Remove both users from the vector and add our adjusted versions
         int curUserIndex = getUserIndex(curUser.name);
         allUsers.erase(allUsers.begin() + curUserIndex);
