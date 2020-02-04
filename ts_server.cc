@@ -82,7 +82,7 @@ public:
         UserInfo curUser = getUser(user->name());
         User signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
-        if(UserInfo == NULL) {
+        if(curUser == NULL) {
             signalUser.set_name("2");
             writer->Write(signalUser);
             return Status::OK;
@@ -162,7 +162,7 @@ public:
         postInfo nPost;
         nPost.post = post->postText();
         nPost.pTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        allUsers.at(i).posts.push_back(nPost);
+        allUsers.at(2).posts.push_back(nPost); //check right here hardcoded the .at
         replyStat->set_stat(0);
         return Status::OK;
     }
@@ -190,7 +190,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    runServer();
+    runServer(argv[0]);
 
     return 0;
 }
