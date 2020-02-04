@@ -83,7 +83,7 @@ public:
 		UserInfo nullCheck;
         User signalUser;
         signalUser.set_name("END_OF_FOLLOWERS");
-        if(curUser == nullptr) {
+        if(&curUser == nullptr) {
             signalUser.set_name("2");
             writer->Write(signalUser);
             return Status::OK;
