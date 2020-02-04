@@ -166,7 +166,7 @@ public:
         replyStat->set_stat(0);
         return Status::OK;
     }
-}
+};
 
 void runServer(std::string serverAddr) {
     TinySocialImpl service;
