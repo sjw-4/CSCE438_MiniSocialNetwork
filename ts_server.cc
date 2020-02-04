@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
 
     std::cout << "debug:made it here" << std::endl;
 
-    runServer("0.0.0.0" + port);
+    runServer("0.0.0.0:" + port);
 
     return 0;
 }
