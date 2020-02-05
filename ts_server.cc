@@ -149,8 +149,9 @@ public:
         //Update the users timeline to remove posts from toUnfollow
         int i = 0;
         int postSize = curUser.posts.size();
+		
         while(i < postSize) {
-            if(curUser.posts.at(i).name == unfollowUser.name) {
+            if(curUser.posts.at(i).name() == unfollowUserName) {
                 curUser.posts.erase(curUser.posts.begin() + i);
                 postSize--;
             }
