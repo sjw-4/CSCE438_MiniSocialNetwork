@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <vector>
 #include <string>
+#include <fstream>
 
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
