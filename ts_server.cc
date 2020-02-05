@@ -150,8 +150,8 @@ public:
         int i = 0;
         int postSize = curUser.posts.size();
         while(i < postSize) {
-            if(curUser.posts.at(i).name == unfollowerUser.name) {
-                curuser.posts.erase(curUser.posts.begin() + i);
+            if(curUser.posts.at(i).name == unfollowUser.name) {
+                curUser.posts.erase(curUser.posts.begin() + i);
                 postSize--;
             }
             else {
