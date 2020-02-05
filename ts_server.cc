@@ -151,7 +151,7 @@ public:
         int postSize = curUser.posts.size();
 		
         while(i < postSize) {
-            if(curUser.posts.at(i).name() == unfollowUserName) {
+            if(curUser.posts.at(i).name() == unfollowUser.name) {
                 curUser.posts.erase(curUser.posts.begin() + i);
                 postSize--;
             }
