@@ -32,6 +32,7 @@ class TinySocialImpl final : public TinySocial::Service {
 private:
     std::vector<UserInfo> allUsers;
     std::string fileName = "userdata.txt";
+    bool dataLoaded = false;
 
     //Finds a user from the passed name, returns false if not found
     bool getUser(std::string _name, UserInfo& user) {
@@ -89,9 +90,9 @@ private:
                 if (u.posts.size() > 0)
                     f << "<Post>" << std::endl;
                 for (int j = 0; j < u.posts.size(); j++) {
-                    f << u.posts.at(j).name << std::endl
-                        << u.posts.at(j).postText << std::endl
-                        << std::to_string(u.posts.at(j).time) << std::endl;
+                    f << u.posts.at(j).name() << std::endl
+                        << u.posts.at(j).posttext() << std::endl
+                        << std::to_string(u.posts.at(j).time()) << std::endl;
                 }
                 if (u.posts.size() > 0)
                     f << "</Post>" << std::endl;
@@ -112,7 +113,7 @@ private:
             while (line != "" && line != "</EOF>") {
             //Handle line 1: Users name
                 UserInfo uiLoad;
-                User uLoad; uLoad.name = line;
+                User uLoad; uLoad.set_name(line);
                 uiLoad.userMsg = uLoad;
                 uiLoad.name = line;
                 std::getline(f, line);
@@ -153,11 +154,11 @@ private:
                     std::getline(f, line);
                     while (line != "</Post>") {
                         Post p;
-                        p.name = line;
+                        p.set_name(line);
                         std::getline(f, line);
-                        p.postText = line;
+                        p.set_posttext(line);
                         std::getline(f, line);
-                        p.time = std::stoll(line);
+                        p.set_time(std::stoll(line));
                         uiLoad.posts.push_back(p);
                         std::getline(f, line);
                     }
@@ -175,6 +176,9 @@ private:
 
 public:
     Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {
+        if(!dataLoaded)
+            loadData(fileName);
+        
         UserInfo curUser;
         if(getUser(user->name(), curUser)) {
             replyStat->set_stat("1");
@@ -380,8 +384,6 @@ public:
 };
 
 void runServer(std::string serverAddr) {
-    loadData(fileName);
-
     TinySocialImpl service;
 
     ServerBuilder builder;
