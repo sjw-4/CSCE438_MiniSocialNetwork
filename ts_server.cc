@@ -30,6 +30,7 @@ struct UserInfo {
 class TinySocialImpl final : public TinySocial::Service {
 private:
     std::vector<UserInfo> allUsers;
+    std::string fileName = "userdata.txt";
 
     //Finds a user from the passed name, returns false if not found
     bool getUser(std::string _name, UserInfo& user) {
@@ -65,6 +66,112 @@ private:
         return -1;
     }
 
+    //Save the data to a file
+    void saveData(std::string fName) {
+        std::ofstream f(fName);
+        if (f.is_open()) {
+            for (int i = 0; i < allUsers.size(); i++) {
+                UserInfo u = allUsers.at(i);
+            //Handle line 1: Users name
+                f << u.name << std::endl;
+            //Handle line 2: List of Users follows
+                for (int j = 0; j < u.following.size(); j++) {
+                    f << u.following.at(j) << "|";
+                }
+                f << std::endl;
+            //Handle line 3: List of Users followers
+                for (int j = 0; j < u.followers.size(); j++) {
+                    f << u.followers.at(j) << "|";
+                }
+                f << std::endl;
+            //Loop through to handle the post info
+                if (u.posts.size() > 0)
+                    f << "<Post>" << std::endl;
+                for (int j = 0; j < u.posts.size(); j++) {
+                    f << u.posts.at(j).name << std::endl
+                        << u.posts.at(j).postText << std::endl
+                        << std::to_string(u.posts.at(j).time) << std::endl;
+                }
+                if (u.posts.size() > 0)
+                    f << "</Post>" << std::endl;
+            }
+            f << "</EOF>" << std::endl;
+        }
+        else {
+            std::cout << "Error saving data" << std::endl;
+        }
+    }
+
+    //Load the data from a file
+    void loadData(std::string fName) {
+        std::ifstream f(fName);
+        if (f.is_open()) {
+            std::string line;
+            std::getline(f, line);
+            while (line != "" && line != "</EOF>") {
+            //Handle line 1: Users name
+                UserInfo uiLoad;
+                User uLoad; uLoad.name = line;
+                uiLoad.userMsg = uLoad;
+                uiLoad.name = line;
+                std::getline(f, line);
+            //Handle line 2: List of Users follows
+                if (line != "") {
+                    int i = 0;
+                    std::string follows;
+                    while (i < line.size()) {
+                        if (line.at(i) == '|') {
+                            uiLoad.following.push_back(follows);
+                            follows = "";
+                        }
+                        else {
+                            follows = follows + line.at(i);
+                        }
+                        i++;
+                    }
+                }
+                std::getline(f, line);
+            //Handle line 3: List of Users followers
+                if (line != "") {
+                    int i = 0;
+                    std::string follower;
+                    while (i < line.size()) {
+                        if (line.at(i) == '|') {
+                            uiLoad.followers.push_back(follower);
+                            follower = "";
+                        }
+                        else {
+                            follower = follower + line.at(i);
+                        }
+                        i++;
+                    }
+                }
+                std::getline(f, line);
+            //Loop through the next bit to get the info of the posts
+                if (line == "<Post>") {
+                    std::getline(f, line);
+                    while (line != "</Post>") {
+                        Post p;
+                        p.name = line;
+                        std::getline(f, line);
+                        p.postText = line;
+                        std::getline(f, line);
+                        p.time = std::stoll(line);
+                        uiLoad.posts.push_back(p);
+                        std::getline(f, line);
+                    }
+                }
+            //Add the data to the vector of all users, and repeat until EOF flag
+                allUsers.push_back(uiLoad);
+                std::getline(f, line);
+            }
+        }
+        else {
+            std::cout << "Error loading data" << std::endl;
+        }
+        return;
+    }
+
 public:
     Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {
         UserInfo curUser;
@@ -77,6 +184,7 @@ public:
             curUser.userMsg = newUserMsg; curUser.name = user->name();
             allUsers.push_back(curUser);
             replyStat->set_stat("2");
+            saveData(fileName);
         }
         return Status::OK;
     }
@@ -167,6 +275,7 @@ public:
         allUsers.push_back(curUser);
         allUsers.push_back(unfollowUser);
         //All is done, set and send status
+        saveData(fileName);
         replyStat->set_stat("0");
         return Status::OK;
     }
@@ -213,6 +322,7 @@ public:
         allUsers.push_back(curUser);
         allUsers.push_back(followUser);
         //All done, set and return staus
+        saveData(fileName);
         replyStat->set_stat("0");
         return Status::OK;
     }
@@ -262,12 +372,15 @@ public:
         allUsers.erase(allUsers.begin() + curUserIndex);
         allUsers.push_back(curUser);
         //All done, set and return status
+        saveData(fileName);
         replyStat->set_stat("0");
         return Status::OK;
     }
 };
 
 void runServer(std::string serverAddr) {
+    loadData(fileName);
+
     TinySocialImpl service;
 
     ServerBuilder builder;
