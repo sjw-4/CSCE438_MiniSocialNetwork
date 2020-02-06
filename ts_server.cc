@@ -232,9 +232,13 @@ public:
             if(bothUsers.at(i) == '|') {
                 curUsername = bothUsers.substr(0, i);
                 //toUnfollow = bothUsers.substr(i + 1, bothUsers.size() - (i + 1));
-				toUnfollow = bothUsers.substr(i + 3, bothUsers.size() - (i + 3));
+				//toUnfollow = bothUsers.substr(i + 3, bothUsers.size() - (i + 3));
                 break;
             }
+			if (bothUsers.at(i) == 'W') {
+				toUnfollow = bothUsers.substr(i + 2, bothUsers.size() - (i + 2));
+				break;
+			}
         }
 		std::cout << "DEBUG: user - " + bothUsers << std::endl;
 		std::cout << "DEBUG: Curuser - " + curUsername << std::endl;
