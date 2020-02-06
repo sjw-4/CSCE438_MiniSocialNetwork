@@ -186,7 +186,7 @@ IReply Client::processCommand(std::string& input)
         User users;
         ReplyStatus rStatus;
         //Concatinate the users name with who they want to unfollow
-        users.set_name(username + "|" + input.substr(7, input.size() - 7));
+        users.set_name(username + "|" + input.substr(9, input.size() - 9));
         myReply.grpc_status = stub_->Unfollow(&context, users, &rStatus);
         myReply.comm_status = checkForError(rStatus.stat());
     }

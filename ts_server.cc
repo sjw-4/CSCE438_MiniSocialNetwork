@@ -232,7 +232,7 @@ public:
             if(bothUsers.at(i) == '|') {
                 curUsername = bothUsers.substr(0, i);
                 //toUnfollow = bothUsers.substr(i + 1, bothUsers.size() - (i + 1));
-				toUnfollow = bothUsers.substr(i + 3, bothUsers.size() - (i + 3));
+				toUnfollow = bothUsers.substr(i + 1, bothUsers.size() - (i + 1));
                 break;
             }
         }
