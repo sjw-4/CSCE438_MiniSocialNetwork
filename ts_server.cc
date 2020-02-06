@@ -42,7 +42,6 @@ private:
                 return true;
             }
         }
-        std::cout << "DEBUG: user - " + _name + ", not found. All users: " << std::endl;
         for(UserInfo u : allUsers) {
             std::cout << u.name + ", ";
         }
@@ -85,7 +84,7 @@ private:
                 }
                 f << std::endl;
             //Handle line 3: List of Users followers
-                if(u.following.size() == 0) {
+                if(u.followers.size() == 0) {
                     f << "<NO_FOLLOWERS>";
                 }
                 for (int j = 0; j < u.followers.size(); j++) {
@@ -182,8 +181,10 @@ private:
 
 public:
     Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {
-        if(!dataLoaded)
+        if(!dataLoaded) {
             loadData(fileName);
+            dataLoaded = true;
+        }
         
         UserInfo curUser;
         if(getUser(user->name(), curUser)) {
