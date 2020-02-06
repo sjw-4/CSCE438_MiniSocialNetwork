@@ -77,11 +77,17 @@ private:
             //Handle line 1: Users name
                 f << u.name << std::endl;
             //Handle line 2: List of Users follows
+                if(u.following.size() == 0) {
+                    f << "<NO_FOLLOWING>";
+                }
                 for (int j = 0; j < u.following.size(); j++) {
                     f << u.following.at(j) << "|";
                 }
                 f << std::endl;
             //Handle line 3: List of Users followers
+                if(u.following.size() == 0) {
+                    f << "<NO_FOLLOWERS>";
+                }
                 for (int j = 0; j < u.followers.size(); j++) {
                     f << u.followers.at(j) << "|";
                 }
@@ -118,7 +124,7 @@ private:
                 uiLoad.name = line;
                 std::getline(f, line);
             //Handle line 2: List of Users follows
-                if (line != "") {
+                if (line != "<NO_FOLLOWS>") {
                     int i = 0;
                     std::string follows;
                     while (i < line.size()) {
@@ -134,7 +140,7 @@ private:
                 }
                 std::getline(f, line);
             //Handle line 3: List of Users followers
-                if (line != "") {
+                if (line != "<NO_FOLLOWERS>") {
                     int i = 0;
                     std::string follower;
                     while (i < line.size()) {
