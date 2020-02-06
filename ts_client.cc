@@ -344,7 +344,7 @@ void Client::processTimeline()
                     checkedFistMsg = true;
                 }
                 //If all is good, add the posts to the vector for reversing
-                if(stat == SUCCESS && post->time > lastPost) {
+                if(stat == SUCCESS && post->time() > lastPost) {
                     posts.insert(posts.begin(), post);
                 }
                 else {
@@ -357,7 +357,7 @@ void Client::processTimeline()
                 lastPost = posts.at(j).time();
             }
             Status s = reader->Finish();
-            if(s != Status::OK) {
+            if(!s.ok()) {
                 std::cout << "Error in getting update timeline" << std::endl;
             }
         }
