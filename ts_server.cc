@@ -381,7 +381,9 @@ public:
         Post np;
         np.set_name(curUser.name);
         //Remove newline characters from the string
-        np.set_posttext(post->posttext().erase(std::remove(post->posttext().begin(), post->posttext().end(), '\n'), post->posttext().end()));
+        std::string pText = post->posttext();
+        pText.erase(std::remove(pText.begin(), pText.end(), '\n'), pText.end());
+        np.set_posttext(pText);
         np.set_time(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
         //Add post to the users list of post
         curUser.posts.insert(curUser.posts.begin(), np);
