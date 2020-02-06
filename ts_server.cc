@@ -42,10 +42,6 @@ private:
                 return true;
             }
         }
-        for(UserInfo u : allUsers) {
-            std::cout << u.name + ", ";
-        }
-        std::cout << std::endl;
         return false;
     }
     
@@ -180,24 +176,17 @@ private:
     }
 
 public:
-    Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {
-        std::cout << "debug:SignIn: SignIn start, dataLoaded = " << dataLoaded << std::endl;
-        
+    Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {        
         if(!dataLoaded) {
             loadData(fileName);
             dataLoaded = true;
         }
-
-        std::cout << "debug:SignIn: data loaded if applicable" << std::endl;
-        
         UserInfo curUser;
         if(getUser(user->name(), curUser)) {
-            std::cout << "debug:SignIn: found user" << std::endl;
             replyStat->set_stat("1");
         }
         else {
             //Add user to the database
-            std::cout << "debug:SignIn: didn't find user, adding them" << std::endl;
             User newUserMsg; newUserMsg.set_name(user->name());
             curUser.userMsg = newUserMsg; curUser.name = user->name();
             allUsers.push_back(curUser);
@@ -263,8 +252,6 @@ public:
             return Status::OK;
         }
         //Remove toUnfollow from users following list
-		//std::cout << "debug unfollow username: " << unfollowUser.name << std::endl;
-		
         int userFollowingIndex = getIndexInVector(unfollowUser.name, curUser.following);
         if(userFollowingIndex == -1) {  //User wasn't found in follow list
             replyStat->set_stat("2");

@@ -26,6 +26,9 @@ using tinysocial::NewPost;
 using tinysocial::ReplyStatus;
 using tinysocial::TinySocial;
 
+//Global var
+long long lastPost = 0;
+
 class Client : public IClient
 {
     public:
@@ -93,6 +96,13 @@ IStatus checkForError(std::string msg) {
         return FAILURE_UNKNOWN;
     else    //This will mean if the string passed is a username (such as in the LIST cmd), all is good
         return SUCCESS;
+}
+
+bool userInputReady() {
+    //Checks if the user has submitted input
+    //Used by processTimeline to update the timeline without blocking while
+    //waiting for user input
+
 }
 
 int Client::connectTo()
@@ -193,6 +203,7 @@ IReply Client::processCommand(std::string& input)
     else if(input == "TIMELINE") {
         User user;
         Post post;
+        std::vector<Post> posts;
         user.set_name(username);
         std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
         //Set a default value for comm_status, since this error should never happen for this command
@@ -200,17 +211,23 @@ IReply Client::processCommand(std::string& input)
         //Set default val to success, so a user without anything in their timeline (and would thus skip the loop)
         //can still get to the timeline functionality
         myReply.comm_status = SUCCESS;
+        int i = 0;
         while(reader->Read(&post)) {
             //If the default value is still set, check the first passed name for errors
             if(!checkedFistMsg) {
                 myReply.comm_status = checkForError(post.name());
                 checkedFistMsg = true;
             }
-            //If all is good, go ahead and print out the timeline for the user
-            if(myReply.comm_status == SUCCESS) {
-                time_t tempTime = post.time();
-                displayPostMessage(post.name(), post.posttext(), tempTime);
-            }
+            //If all is good, add the posts to the vector for reversing
+            if(myReply.comm_status == SUCCESS && i < 20) {
+                posts.insert(posts.begin(), post);
+                i++;
+            }            
+        }
+        for(int j = 0; j < posts.size(); j++) {
+            time_t tempTime = posts.at(j).time();
+            displayPostMessage(posts.at(j).name(), posts.at(j).posttext(), tempTime);
+            lastPost = posts.at(j).time();
         }
         myReply.grpc_status = reader->Finish();
     }
