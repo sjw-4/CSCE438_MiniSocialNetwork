@@ -235,6 +235,9 @@ public:
                 break;
             }
         }
+		std::cout << "DEBUG: user - " + bothUsers << std::endl;
+		std::cout << "DEBUG: Curuser - " + curUsername << std::endl;
+		std::cout << "DEBUG: unFollowuser - " + toUnfollow << std::endl;
         //Find the user who wants to unfollow someone
         UserInfo curUser;
         if(!getUser(curUsername, curUser)) {
@@ -249,7 +252,7 @@ public:
             return Status::OK;
         }
         //Remove toUnfollow from users following list
-		std::cout << "debug unfollow username: " << unfollowUser.name << std::endl;
+		//std::cout << "debug unfollow username: " << unfollowUser.name << std::endl;
 		
         int userFollowingIndex = getIndexInVector(unfollowUser.name, curUser.following);
         if(userFollowingIndex == -1) {  //User wasn't found in follow list
@@ -299,12 +302,14 @@ public:
                 break;
             }
         }
+		
         //Find the user who wants to follow someone
         UserInfo curUser;
         if(!getUser(curUsername, curUser)) {
             replyStat->set_stat("2");
             return Status::OK;
         }
+		
         //Check if they are already folling toFollow
         if(getIndexInVector(toFollow, curUser.following) != -1) {
             replyStat->set_stat("1");
