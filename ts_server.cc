@@ -181,17 +181,23 @@ private:
 
 public:
     Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {
+        std::cout << "debug:SignIn: SignIn start, dataLoaded = " << dataLoaded << std::endl;
+        
         if(!dataLoaded) {
             loadData(fileName);
             dataLoaded = true;
         }
+
+        std::cout << "debug:SignIn: data loaded if applicable" << std::endl;
         
         UserInfo curUser;
         if(getUser(user->name(), curUser)) {
+            std::cout << "debug:SignIn: found user" << std::endl;
             replyStat->set_stat("1");
         }
         else {
             //Add user to the database
+            std::cout << "debug:SignIn: didn't find user, adding them" << std::endl;
             User newUserMsg; newUserMsg.set_name(user->name());
             curUser.userMsg = newUserMsg; curUser.name = user->name();
             allUsers.push_back(curUser);
@@ -243,9 +249,6 @@ public:
                 break;
             }
         }
-		std::cout << "DEBUG: user - " + bothUsers << std::endl;
-		std::cout << "DEBUG: Curuser - " + curUsername << std::endl;
-		std::cout << "DEBUG: unFollowuser - " + toUnfollow << std::endl;
         //Find the user who wants to unfollow someone
         UserInfo curUser;
         if(!getUser(curUsername, curUser)) {
