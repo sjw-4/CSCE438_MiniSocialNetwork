@@ -249,7 +249,7 @@ public:
             return Status::OK;
         }
         //Remove toUnfollow from users following list
-		cout << "debug unfollow username: " << unfollowUser.name << endl;
+		std::cout << "debug unfollow username: " << unfollowUser.name << std::endl;
 		
         int userFollowingIndex = getIndexInVector(unfollowUser.name, curUser.following);
         if(userFollowingIndex == -1) {  //User wasn't found in follow list
