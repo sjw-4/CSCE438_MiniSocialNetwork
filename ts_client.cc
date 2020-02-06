@@ -26,9 +26,6 @@ using tinysocial::NewPost;
 using tinysocial::ReplyStatus;
 using tinysocial::TinySocial;
 
-//Global variables
-Post lastMsg;
-
 class Client : public IClient
 {
     public:
@@ -96,43 +93,6 @@ IStatus checkForError(std::string msg) {
         return FAILURE_UNKNOWN;
     else    //This will mean if the string passed is a username (such as in the LIST cmd), all is good
         return SUCCESS;
-}
-
-bool userInputReady() {
-    //Checks to see if user input is ready to be read. Used by the processChatmode function
-    //so it can update the timeline without blocking on stdin read
-
-    //create timeval for the select call to timeout every 1/100th second
-	struct timeval timeout;
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 10000;
-
-    //Set fd info for select
-    int fds[1];
-    fds[0] = STDIN_FILENO;
-    int numReady;
-    int maxFd = STDIN_FILENO + 1;
-    fd_set r_fd;
-    FD_ZERO(&r_fd);
-
-    //Select call to see if user input is ready
-    numReady = select(maxFd, &r_fd, NULL, NULL, &timeout);
-    if(numReady == -1 && errno == EINTR) {
-        //was interrupted, return false to be safe
-        return false;
-    }
-    else if(numReady == -1) {
-        //Something went very wrong, time to exit
-		printf("crsd::chatroom::Error on select, exiting");
-		exit(1);
-	}
-    else if(numReady == 0) {
-        //select timed out, return false
-        return false;
-    }
-    else {
-        return true;
-    }
 }
 
 int Client::connectTo()
@@ -236,28 +196,21 @@ IReply Client::processCommand(std::string& input)
         user.set_name(username);
         std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
         //Set a default value for comm_status, since this error should never happen for this command
-        bool checkedFirstMsg = false;
+        bool checkedFistMsg = false;
         //Set default val to success, so a user without anything in their timeline (and would thus skip the loop)
         //can still get to the timeline functionality
         myReply.comm_status = SUCCESS;
-        std::vector<Post> posts;
         while(reader->Read(&post)) {
             //If the default value is still set, check the first passed name for errors
-            if(!checkedFirstMsg) {
+            if(!checkedFistMsg) {
                 myReply.comm_status = checkForError(post.name());
-                checkedFirstMsg = true;
+                checkedFistMsg = true;
             }
             //If all is good, go ahead and print out the timeline for the user
             if(myReply.comm_status == SUCCESS) {
-                posts.insert(posts.begin(), post);
+                time_t tempTime = post.time();
+                displayPostMessage(post.name(), post.posttext(), tempTime);
             }
-        }
-        lastMsg.set_name(posts.at(posts.size() - 1).name());
-        lastMsg.set_posttext(posts.at(posts.size() - 1).posttext());
-        lastMsg.set_time(posts.at(posts.size() - 1).posttime());
-        for(int i = 0; i < posts.size(); i++) {
-            time_t tempTime = posts.at(i).time();
-            displayPostMessage(posts.at(i).name(), posts.at(i).posttext(), tempTime);
         }
         myReply.grpc_status = reader->Finish();
     }
@@ -317,44 +270,13 @@ void Client::processTimeline()
 
     for(;;) {
         ClientContext context;
-        if(userInputReady()) {
-            NewPost post;
-            ReplyStatus rStatus;
-            post.set_postfrom(username);
-            post.set_posttext(getPostMessage());
-            Status stat = stub_->PostTimeline(&context, post, &rStatus);
-            if(checkForError(rStatus.stat()) != SUCCESS) {
-                std::cout << "Debug:tsc:processTimeline:Error from server" << std::endl;
-            }
+        NewPost post;
+        ReplyStatus rStatus;
+        post.set_postfrom(username);
+        post.set_posttext(getPostMessage());
+        Status stat = stub_->PostTimeline(&context, post, &rStatus);
+        if(checkForError(rStatus.stat()) != SUCCESS) {
+            std::cout << "Debug:tsc:processTimeline:Error from server" << std::endl;
         }
-        //TODO: finish implementing
-        /*else {
-            enum IStatus stat;
-            User user;
-            Post post;
-            user.set_name(username);
-            std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
-            //Set a default value for comm_status, since this error should never happen for this command
-            bool checkedFirstMsg = false;
-            //Set default val to success, so a user without anything in their timeline (and would thus skip the loop)
-            //can still get to the timeline functionality
-            stat = SUCCESS;
-            while(reader->Read(&post)) {
-                //If the default value is still set, check the first passed name for errors
-                if(!checkedFirstMsg) {
-                    myReply.comm_status = checkForError(post.name());
-                    checkedFirstMsg = true;
-                }
-                //If all is good, go ahead and print out the timeline for the user
-                if(myReply.comm_status == SUCCESS) {
-                    time_t tempTime = post.time();
-                    lastMsg.set_name(post.name());
-                    lastMsg.set_posttext(post.posttext());
-                    lastMsg.set_time(post.posttime());
-                    displayPostMessage(post.name(), post.posttext(), tempTime);
-                }
-            }
-            myReply.grpc_status = reader->Finish();
-        }*/
     }
 }
