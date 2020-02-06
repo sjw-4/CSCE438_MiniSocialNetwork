@@ -380,7 +380,8 @@ public:
         //Create a new Post variable to store the post info
         Post np;
         np.set_name(curUser.name);
-        np.set_posttext(post->posttext());
+        //Remove newline characters from the string
+        np.set_posttext(post->posttext().erase(std::remove(post->posttext().begin(), post->posttext().end(), '\n'), post->posttext().end()));
         np.set_time(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
         //Add post to the users list of post
         curUser.posts.insert(curUser.posts.begin(), np);
