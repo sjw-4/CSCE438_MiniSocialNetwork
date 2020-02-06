@@ -240,6 +240,7 @@ public:
         if(!getUser(curUsername, curUser)) {
             replyStat->set_stat("2");
             return Status::OK;
+			
         }
         //Find the user to unfollow
         UserInfo unfollowUser;
@@ -248,6 +249,8 @@ public:
             return Status::OK;
         }
         //Remove toUnfollow from users following list
+		cout << "debug unfollow username: " << unfollowUser.name << endl;
+		
         int userFollowingIndex = getIndexInVector(unfollowUser.name, curUser.following);
         if(userFollowingIndex == -1) {  //User wasn't found in follow list
             replyStat->set_stat("2");
