@@ -344,7 +344,7 @@ void Client::processTimeline()
                     checkedFistMsg = true;
                 }
                 //If all is good, add the posts to the vector for reversing
-                if(stat == SUCCESS && post->time() > lastPost) {
+                if(stat == SUCCESS && post.time() > lastPost) {
                     posts.insert(posts.begin(), post);
                 }
                 else {
