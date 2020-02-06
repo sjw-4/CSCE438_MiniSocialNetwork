@@ -118,17 +118,17 @@ bool userInputReady(unsigned int timeoutUSec) {
 
     //Select call
     numReady = select(maxFd, &r_fd, NULL, NULL, &timeout);
-    if(numReady == -1 && errno == EINTR)	//was interrupted, continue the loop
-			continue;
-		else if(numReady == -1) {	//Something went very wrong, time to exit
-			printf("ts_client::userInputReady::Error on select, exiting");
-			exit(1);
-		}
-		else if(numReady == 0) {	//select() timed out, return false
-			return false
-		}
-        else    //input is ready, let user know
-            return true;
+    if(numReady == -1 && errno == EINTR)	//was interrupted, return false to be safe
+		return false;
+	else if(numReady == -1) {	//Something went very wrong, time to exit
+		printf("ts_client::userInputReady::Error on select, exiting");
+		exit(1);
+	}
+	else if(numReady == 0) {	//select() timed out, return false
+		return false;
+	}
+    else    //input is ready, let user know
+        return true;
 }
 
 int Client::connectTo()
