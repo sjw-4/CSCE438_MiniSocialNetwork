@@ -44,7 +44,7 @@ private:
         }
         return false;
     }
-    
+    //test
     //Finds the users index from the passed name, returns -1 if not found
     int getUserIndex(std::string _name) {
         for(int i = 0; i < allUsers.size(); i++) {
