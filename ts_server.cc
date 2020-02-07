@@ -44,7 +44,7 @@ private:
         }
         return false;
     }
-    //test
+    
     //Finds the users index from the passed name, returns -1 if not found
     int getUserIndex(std::string _name) {
         for(int i = 0; i < allUsers.size(); i++) {
@@ -359,6 +359,7 @@ public:
     }
     Status PostTimeline(ServerContext* context, const NewPost* post, ReplyStatus* replyStat) override {
         UserInfo curUser;
+		std::cout << "Entering PostTimeline function" << std::endl;
         //Find the user who is posting
         if(getUser(post->postfrom(), curUser) == -1) {
             replyStat->set_stat("2");
@@ -386,6 +387,7 @@ public:
         allUsers.erase(allUsers.begin() + curUserIndex);
         allUsers.push_back(curUser);
         //All done, set and return status
+		std::cout << "Exiting PostTimeline function" << std::endl;
         saveData(fileName);
         replyStat->set_stat("0");
         return Status::OK;
