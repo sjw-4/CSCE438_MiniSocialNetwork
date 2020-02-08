@@ -211,16 +211,16 @@ public:
             User& followerR = follower;
             writer->Write(followerR);
         }
+        User& curUserMsg = curUser.userMsg;
+        writer->Write(curUserMsg);
         //Send the client an indicator that the list of followers has ended
         User signalU; signalU.set_name("END_OF_FOLLOWERS");
         const User& signalUR = signalU;
         writer->Write(signalUR);
         //Send all of the users
         for(UserInfo user : allUsers) {
-            if(curUser.name != user.name) {
-                User& userR = user.userMsg;
-                writer->Write(userR);
-            }
+            User& userR = user.userMsg;
+            writer->Write(userR);
         }
         //All done, send status
         return Status::OK;
