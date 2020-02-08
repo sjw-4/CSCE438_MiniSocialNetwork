@@ -413,11 +413,11 @@ int main(int argc, char** argv) {
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }*/
-    std::cout << "Begin cmd line args" << std::cout;
+    std::cout << "Begin cmd line args" << std::endl;
     for(int i = 0; i < argc; i++) {
         std::cout << argv[i] << std::endl;
     }
-    std::cout << "End cmd line args" << std::cout;
+    std::cout << "End cmd line args" << std::endl;
 
     runServer("0.0.0.0:" + port);
 
