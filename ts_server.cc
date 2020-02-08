@@ -170,7 +170,7 @@ private:
             }
         }
         else {
-            std::cout << "Error loading data" << std::endl;
+            std::cout << "No file found, no user data loaded" << std::endl;
         }
         return;
     }
@@ -238,6 +238,11 @@ public:
                 break;
             }
         }
+        //Don't allow the user to unfollow itself
+        if(curUsername == toUnfollow) {
+            replyStat->set_stat("4");
+            return Status::OK;
+        }
         //Find the user who wants to unfollow someone
         UserInfo curUser;
         if(!getUser(curUsername, curUser)) {
@@ -300,7 +305,11 @@ public:
                 break;
             }
         }
-		
+		//The user already follows itself, don't allow them to try agin
+        if(curUsername == toFollow) {
+            replyStat->set_stat("4");
+            return Status::OK;
+        }
         //Find the user who wants to follow someone
         UserInfo curUser;
         if(!getUser(curUsername, curUser)) {
