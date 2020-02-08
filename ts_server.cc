@@ -404,20 +404,10 @@ void runServer(std::string serverAddr) {
 
 int main(int argc, char** argv) {
     std::string port = "3010";
-    /*int opt = 0;
-    while ((opt = getopt(argc, argv, "p")) != -1){
-        switch(opt) {
-            case 'p':
-                port = optarg; break;
-            default:
-                std::cerr << "Invalid Command Line Argument\n";
-        }
-    }*/
-    std::cout << "Begin cmd line args" << std::endl;
-    for(int i = 0; i < argc; i++) {
-        std::cout << argv[i] << std::endl;
+
+    if(argc > 1) {
+        port = argc[argc - 1];
     }
-    std::cout << "End cmd line args" << std::endl;
 
     runServer("0.0.0.0:" + port);
 
