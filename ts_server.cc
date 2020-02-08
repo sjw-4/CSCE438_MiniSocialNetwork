@@ -406,7 +406,7 @@ int main(int argc, char** argv) {
     std::string port = "3010";
 
     if(argc > 1) {
-        port = argc[argc - 1];
+        port = argv[argc - 1];
     }
 
     runServer("0.0.0.0:" + port);
