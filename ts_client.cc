@@ -347,20 +347,21 @@ void Client::processTimeline()
             stat = SUCCESS;
             bool newPost = true;
             std::cout << "7-" << i << ", ";
-            while(reader->Read(&post) && newPost) {
+            while(reader->Read(&post)) {
                 //If the default value is still set, check the first passed name for errors
                 if(!checkedFistMsg) {
                     stat = checkForError(post.name());
                     checkedFistMsg = true;
                 }
                 //If all is good, add the posts to the vector for reversing
-                if(stat == SUCCESS && post.time() > lastPost) {
+                if(newPost && stat == SUCCESS && post.time() > lastPost) {
                     posts.insert(posts.begin(), post);
                 }
                 else {
                     newPost = false;
                 }
             }
+	    Status s = reader->Finish();
             std::cout << "8-" << i << ", ";
             for(int j = 0; j < posts.size(); j++) {
                 time_t tempTime = posts.at(j).time();
@@ -368,11 +369,11 @@ void Client::processTimeline()
                 lastPost = posts.at(j).time();
             }
             std::cout << "9-" << i << ", ";
-            Status s = reader->Finish();
             if(!s.ok()) {
                 std::cout << "Error in getting update timeline" << std::endl;
             }
         }
         std::cout << "10-" << i << std::endl;
     }
+    std::cout << "This should never appear" << std::endl;
 }
