@@ -312,7 +312,6 @@ void Client::processTimeline()
 	// ------------------------------------------------------------
 
     for(;;) {
-        i++;
         ClientContext context;
         if(userInputReady(100000)) {
             NewPost post;
