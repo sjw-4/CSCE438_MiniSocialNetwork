@@ -311,42 +311,32 @@ void Client::processTimeline()
     // CTRL-C (SIGINT)
 	// ------------------------------------------------------------
 
-    int i = 0;
     for(;;) {
         i++;
-        std::cout << "Debug timeline mode: ";
-        std::cout << "1-" << i << ", ";
         ClientContext context;
         if(userInputReady(100000)) {
-            std::cout << "1-" << i << ", ";
             NewPost post;
             ReplyStatus rStatus;
             post.set_postfrom(username);
             post.set_posttext(getPostMessage());
-            std::cout << "2-" << i << ", ";
             Status stat = stub_->PostTimeline(&context, post, &rStatus);
             if(checkForError(rStatus.stat()) != SUCCESS) {
                 std::cout << "Debug:tsc:processTimeline:Error from server" << std::endl;
             }
-            std::cout << "3-" << i << ", ";
         }
         else {
-            std::cout << "4-" << i << ", ";
             User user;
             Post post;
             enum IStatus stat;
             std::vector<Post> posts;
             user.set_name(username);
-            std::cout << "5-" << i << ", ";
             std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
             //Set a default value for comm_status, since this error should never happen for this command
             bool checkedFistMsg = false;
             //Set default val to success, so a user without anything in their timeline (and would thus skip the loop)
             //can still get to the timeline functionality
-            std::cout << "6-" << i << ", ";
             stat = SUCCESS;
             bool newPost = true;
-            std::cout << "7-" << i << ", ";
             while(reader->Read(&post)) {
                 //If the default value is still set, check the first passed name for errors
                 if(!checkedFistMsg) {
@@ -361,19 +351,15 @@ void Client::processTimeline()
                     newPost = false;
                 }
             }
-	    Status s = reader->Finish();
-            std::cout << "8-" << i << ", ";
+	        Status s = reader->Finish();
             for(int j = 0; j < posts.size(); j++) {
                 time_t tempTime = posts.at(j).time();
                 displayPostMessage(posts.at(j).name(), posts.at(j).posttext(), tempTime);
                 lastPost = posts.at(j).time();
             }
-            std::cout << "9-" << i << ", ";
             if(!s.ok()) {
                 std::cout << "Error in getting update timeline" << std::endl;
             }
         }
-        std::cout << "10-" << i << std::endl;
     }
-    std::cout << "This should never appear" << std::endl;
 }
