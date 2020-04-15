@@ -195,6 +195,14 @@ IReply Client::processCommand(std::string& input)
         }
         //begin setting values in IReply
         myReply.grpc_status = reader->Finish();
+
+        //Check to make sure a connection was established
+        if(allUsers.size() == 0) {
+            std::cout << "Bad connection on LIST command" << std::endl;
+            myReply.comm_status = checkForError("5");
+            return myReply;
+        }
+
         myReply.comm_status = checkForError(allUsers.at(0));
         //The server inserts an END_OF_FOLLOWERS string to indicate where the list goes from followers to all other users
         for(int i = 0; i < allUsers.size(); i++) {
