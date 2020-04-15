@@ -43,15 +43,14 @@ IPInfo getIPInfo(std::string unformatted) {
         }
         else if(unformatted.at(i) == ':' && counter == 1) {
             newIP.ipAddress = curStr;
-            curStr = "";
-            counter++;
+            break;
         }
         else {
             curStr += unformatted.at(i);
         }
     }
     newIP.alive = true;
-    newIP.portNo = NULL;
+    newIP.portNo = -1;
     curMaxId++;
     newIP.idNum = std::to_string(curMaxId);
     return newIP;
