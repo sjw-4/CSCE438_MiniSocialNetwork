@@ -38,13 +38,16 @@ class Client : public IClient
             :hostname(hname), username(uname), port(p)
             {}
     protected:
-        virtual int connectTo();
+        virtual int connectTo(bool routingServer);
         virtual IReply processCommand(std::string& input);
         virtual void processTimeline();
     private:
         std::string hostname;
         std::string username;
         std::string port;
+
+        std::string tss_hostname;   //hostname for the tss server to connect to
+        std::string tss_port;       //port for the tss server to connect to
         
         // You can have an instance of the client stub
         // as a member variable.
@@ -71,6 +74,8 @@ int main(int argc, char** argv) {
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }
+
+    connectToRouting = true;
 
     Client myc(hostname, username, port);
     // You MUST invoke "run_client" function to start business logic
@@ -131,7 +136,7 @@ bool userInputReady(unsigned int timeoutUSec) {
         return true;
 }
 
-int Client::connectTo()
+int Client::connectTo(bool routingServer)
 {
 	// ------------------------------------------------------------
     // In this function, you are supposed to create a stub so that
@@ -143,21 +148,37 @@ int Client::connectTo()
     // Please refer to gRpc tutorial how to create a stub.
 	// ------------------------------------------------------------
 
-    std::shared_ptr<Channel> channel = grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials());
-    stub_ = TinySocial::NewStub(channel);
-    ClientContext context;
-    User curUser; curUser.set_name(username);
-    ReplyStatus rStat;
-    Status stat = stub_->SignIn(&context, curUser, &rStat);
-    if(rStat.stat() == "1") {
-        //User exists, consider writing that they have signed in
-    }
-    else if(rStat.stat() == "2") {
-        //User is new, consider writing a welcom message
+    if(routingServer) {
+        std::shared_ptr<Channel> channel = grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials());
+        stub_ = TinySocial::NewStub(channel);
+        ClientContext context;
+        ServerInfo tsServer;
+
+        //FOR DEBUG
+        ReplyStatus sStat; sStat.set_stat("0");
+        ReplyStatus &rStat;
+        Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+        //END FOR DEBUG
+
+        //TODO finish implimentation
     }
     else {
-        //Something has gone wrong, exit
-        exit(1);
+        std::shared_ptr<Channel> channel = grpc::CreateChannel(hostname + ":" + port, grpc::InsecureChannelCredentials());
+        stub_ = TinySocial::NewStub(channel);
+        ClientContext context;
+        User curUser; curUser.set_name(username);
+        ReplyStatus rStat;
+        Status stat = stub_->SignIn(&context, curUser, &rStat);
+        if(rStat.stat() == "1") {
+            //User exists, consider writing that they have signed in
+        }
+        else if(rStat.stat() == "2") {
+            //User is new, consider writing a welcom message
+        }
+        else {
+            //Something has gone wrong, exit
+            exit(1);
+        }
     }
 
     return 1; // return 1 if success, otherwise return -1
@@ -195,7 +216,6 @@ IReply Client::processCommand(std::string& input)
         }
         //begin setting values in IReply
         myReply.grpc_status = reader->Finish();
-        myReply.comm_status = checkForError("5");
 
         //Check to make sure a connection was established
         if(allUsers.size() != 0) {
@@ -213,6 +233,8 @@ IReply Client::processCommand(std::string& input)
                 else
                     myReply.followers.push_back(allUsers.at(i));
             }
+        } else {
+            myReply.comm_status = checkForError("5");
         }
     }
     else if(strncmp(input.c_str(), "FOLLOW ", 7) == 0) {
@@ -336,16 +358,16 @@ void Client::processTimeline()
             user.set_name(username);
             std::unique_ptr<ClientReader<Post> > reader(stub_->GetTimeline(&context, user));
             //Set a default value for comm_status, since this error should never happen for this command
-            bool checkedFistMsg = false;
+            bool checkedFirstMsg = false;
             //Set default val to success, so a user without anything in their timeline (and would thus skip the loop)
             //can still get to the timeline functionality
             stat = SUCCESS;
             bool newPost = true;
             while(reader->Read(&post)) {
                 //If the default value is still set, check the first passed name for errors
-                if(!checkedFistMsg) {
+                if(!checkedFirstMsg) {
                     stat = checkForError(post.name());
-                    checkedFistMsg = true;
+                    checkedFirstMsg = true;
                 }
                 //If all is good, add the posts to the vector for reversing
                 if(newPost && stat == SUCCESS && post.time() > lastPost) {
@@ -363,6 +385,7 @@ void Client::processTimeline()
             }
             if(!readerStat.ok()) {
                 std::cout << "Error in getting update timeline" << std::endl;
+                return;
             }
         }
     }

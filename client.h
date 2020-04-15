@@ -55,7 +55,7 @@ class IClient
         /*
          * Pure virtual functions to be implemented by students
          */
-        virtual int connectTo() = 0;
+        virtual int connectTo(bool routingServer) = 0;
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual void processTimeline() = 0;
 
@@ -71,6 +71,36 @@ class IClient
 
 void IClient::run()
 {
+    while(true) {
+        int ret = connectTo(true);
+        if (ret < 0) {
+            std::cout << "connection to routing server failed: " << ret << std::endl;
+            exit(1);
+        }
+
+        //REMOVE - FOR DEBUG
+        std::cout << "job done" << std::endl;
+        exit(1);
+
+        int ret = connectTo(false);
+        if (ret < 0) {
+            std::cout << "connection failed: " << ret << std::endl;
+        }
+        else {
+            IReply reply;
+            do {
+                std::string cmd = getCommand();
+                reply = processCommand(cmd);
+                displayCommandReply(cmd, reply);
+                if (reply.grpc_status.ok() && reply.comm_status == SUCCESS && cmd == "TIMELINE") {
+                    std::cout << "Now you are in the timeline" << std::endl;
+                    processTimeline();
+                    break;
+                }
+            } while(reply.grpc_status.ok());
+        }
+    }
+    /*
     int ret = connectTo();
     if (ret < 0) {
         std::cout << "connection failed: " << ret << std::endl;
@@ -87,6 +117,7 @@ void IClient::run()
             processTimeline();
         }
     }
+    */
 }
 
 void IClient::displayTitle() const

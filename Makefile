@@ -36,12 +36,15 @@ PROTOS_PATH = ./
 
 vpath %.proto $(PROTOS_PATH)
 
-all: system-check ts_client ts_server
+all: system-check ts_client ts_server ts_routing
 
 ts_client: ts.pb.o ts.grpc.pb.o ts_client.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 ts_server: ts.pb.o ts.grpc.pb.o ts_server.o
+	$(CXX) $^ $(LDFLAGS) -o $@
+
+ts_routing: ts.pb.o ts.grpc.pb.o ts_routing.o
 	$(CXX) $^ $(LDFLAGS) -o $@
 
 .PRECIOUS: %.grpc.pb.cc
@@ -53,7 +56,7 @@ ts_server: ts.pb.o ts.grpc.pb.o ts_server.o
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean:
-	rm -f *.o *.pb.cc *.pb.h ts_client ts_server ts_async_client ts_async_client2 ts_async_server
+	rm -f *.o *.pb.cc *.pb.h ts_client ts_routing ts_server  ts_async_client ts_async_client2 ts_async_server
 
 
 # The following is to test your system and ensure a smoother experience.

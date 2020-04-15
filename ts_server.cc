@@ -399,6 +399,9 @@ public:
         replyStat->set_stat("0");
         return Status::OK;
     }
+    Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
+        return Status::OK;
+    }
 };
 
 void runServer(std::string serverAddr) {
