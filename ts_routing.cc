@@ -51,7 +51,7 @@ IPInfo getIPInfo(std::string unformatted) {
         }
     }
     newIP.alive = true;
-    newIp.portNo = NULL;
+    newIP.portNo = NULL;
     curMaxId++;
     newIP.idNum = std::to_string(curMaxId);
     return newIP;
