@@ -153,7 +153,7 @@ int Client::connectTo(bool routingServer)
         ClientContext context;
         ServerInfo tsServer;
         ReplyStatus sStat; sStat.set_stat("0");
-        ReplyStatus rStat;
+        ServerInfo si;
         Status stat = stub_->GetServerInfo(&context, sStat, &si);
         tss_hostname = si.serverip();
         tss_port = si.port();
