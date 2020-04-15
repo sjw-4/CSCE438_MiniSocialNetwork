@@ -81,7 +81,7 @@ public:
         if(servers.size() == 1) {
             selectNewMaster();
         }
-        std::cout << "Added server: " << servers.at(servers.size() - 1) << std::endl;
+        std::cout << "Added server: " << servers.at(servers.size() - 1).idNum << std::endl;
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
