@@ -21,9 +21,13 @@ using tinysocial::NewPost;
 using tinysocial::ServerInfo;
 using tinysocial::TinySocial;
 
+//Global var
+int curMaxId = 0;
+
 struct IPInfo {
     std::string ipAddress;
     std::string portNo;
+    int idNum;
     bool alive;
 };
 
@@ -46,8 +50,10 @@ IPInfo getIPInfo(std::string unformatted) {
             curStr += unformatted.at(i);
         }
     }
-    newIP.portNo = curStr;
     newIP.alive = true;
+    newIp.portNo = NULL;
+    curMaxId++;
+    newIP.idNum = std::to_string(curMaxId);
     return newIP;
 }
 
@@ -77,10 +83,18 @@ public:
         std::cout << "Added server" << std::endl;
         return Status::OK;
     }
-    Status GetServerInfo(ServerContext* context, const User* user, ServerInfo* si) override {
-        //Make sure master is still there
+    Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
+        if(rStat->stat() != -1) {
+            for(int i = 0; i < servers.size(); i++) {
+                if(servers(i).idNum.equals(rStat->stat())) {
+                    servers(i).alive = false;
+                    selectNewMaster();
+                }
+            }
+        }
         si->set_serverip(curMaster.ipAddress);
         si->set_serverport(curMaster.portNo);
+        si->set_serverid(curMaster.idNum);
         return Status::OK;
     }
     /*Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {

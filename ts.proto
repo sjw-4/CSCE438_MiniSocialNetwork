@@ -15,7 +15,7 @@ service TinySocial {
     rpc GetTimeline(User) returns (stream Post) {}
     rpc PostTimeline(NewPost) returns (ReplyStatus) {}
     rpc HeartBeat(ReplyStatus) returns (ReplyStatus) {}
-    rpc GetServerInfo(User) returns (ServerInfo) {}
+    rpc GetServerInfo(ReplyStatus) returns (ServerInfo) {}
     rpc ServerLogin(ReplyStatus) returns (ReplyStatus) {}
 }
 
@@ -37,4 +37,5 @@ message NewPost {
 message ServerInfo {
     string serverIP = 1;
     string serverPort = 2;
+    string serverID = 3;
 }

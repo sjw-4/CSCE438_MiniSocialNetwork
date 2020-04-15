@@ -49,6 +49,7 @@ class Client : public IClient
 
         std::string tss_hostname;   //hostname for the tss server to connect to
         std::string tss_port;       //port for the tss server to connect to
+        std::string serverID;       //id num of connected server
         
         // You can have an instance of the client stub
         // as a member variable.
@@ -152,7 +153,13 @@ int Client::connectTo(bool routingServer)
         stub_ = TinySocial::NewStub(channel);
         ClientContext context;
         ServerInfo tsServer;
-        User curUser; curUser.set_name(username);
+        ReplyStatus rStat;
+        if(serverID == NULL) {
+            rStat.set_stat("-1");
+        }
+        else {
+            rStat.set_stat(serverID);
+        }
         ServerInfo si;
         Status stat = stub_->GetServerInfo(&context, curUser, &si);
         tss_hostname = si.serverip();
