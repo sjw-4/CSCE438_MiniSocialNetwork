@@ -154,7 +154,7 @@ int Client::connectTo(bool routingServer)
         ServerInfo tsServer;
         User curUser; curUser.set_name(username);
         ServerInfo si;
-        Status stat = stub_->GetServerInfo(&context, sStat, &si);
+        Status stat = stub_->GetServerInfo(&context, curUser, &si);
         tss_hostname = si.serverip();
         tss_port = si.serverport();
     }
