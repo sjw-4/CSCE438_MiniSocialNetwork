@@ -24,6 +24,7 @@ using tinysocial::User;
 using tinysocial::Post;
 using tinysocial::NewPost;
 using tinysocial::ReplyStatus;
+using tinysocail::ServerInfo;
 using tinysocial::TinySocial;
 
 //Global var
@@ -74,8 +75,6 @@ int main(int argc, char** argv) {
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }
-
-    connectToRouting = true;
 
     Client myc(hostname, username, port);
     // You MUST invoke "run_client" function to start business logic
@@ -156,7 +155,7 @@ int Client::connectTo(bool routingServer)
 
         //FOR DEBUG
         ReplyStatus sStat; sStat.set_stat("0");
-        ReplyStatus &rStat;
+        ReplyStatus rStat;
         Status stat = stub_->ServerLogin(&context, sStat, &rStat);
         //END FOR DEBUG
 
