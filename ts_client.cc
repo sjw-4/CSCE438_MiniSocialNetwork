@@ -154,6 +154,7 @@ int Client::connectTo(bool routingServer)
         ClientContext context;
         ServerInfo tsServer;
         ReplyStatus rStat;
+        std::cout << "ConnectTo: current server ID is: " << serverID << std::endl;
         if(serverID == "") {
             rStat.set_stat("-1");
         }
