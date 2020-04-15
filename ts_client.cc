@@ -152,11 +152,11 @@ int Client::connectTo(bool routingServer)
         stub_ = TinySocial::NewStub(channel);
         ClientContext context;
         ServerInfo tsServer;
-        ReplyStatus sStat; sStat.set_stat("0");
+        User curUser; curUser.set_name(username);
         ServerInfo si;
         Status stat = stub_->GetServerInfo(&context, sStat, &si);
         tss_hostname = si.serverip();
-        tss_port = si.port();
+        tss_port = si.serverport();
     }
     else {
         std::shared_ptr<Channel> channel = grpc::CreateChannel(tss_hostname + ":" + tss_port, grpc::InsecureChannelCredentials());
