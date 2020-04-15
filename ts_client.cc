@@ -24,7 +24,7 @@ using tinysocial::User;
 using tinysocial::Post;
 using tinysocial::NewPost;
 using tinysocial::ReplyStatus;
-using tinysocail::ServerInfo;
+using tinysocial::ServerInfo;
 using tinysocial::TinySocial;
 
 //Global var
