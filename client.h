@@ -78,10 +78,6 @@ void IClient::run()
             exit(1);
         }
 
-        //REMOVE - FOR DEBUG
-        std::cout << "job done" << std::endl;
-        exit(1);
-
         ret = connectTo(false);
         if (ret < 0) {
             std::cout << "connection failed: " << ret << std::endl;
