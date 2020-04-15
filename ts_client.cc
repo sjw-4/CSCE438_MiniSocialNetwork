@@ -165,6 +165,7 @@ int Client::connectTo(bool routingServer)
         Status stat = stub_->GetServerInfo(&context, rStat, &si);
         tss_hostname = si.serverip();
         tss_port = si.serverport();
+        serverID = si.serverid();
     }
     else {
         std::shared_ptr<Channel> channel = grpc::CreateChannel(tss_hostname + ":" + tss_port, grpc::InsecureChannelCredentials());
