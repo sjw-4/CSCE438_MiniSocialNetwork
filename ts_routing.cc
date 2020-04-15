@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <iostream>
 
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
