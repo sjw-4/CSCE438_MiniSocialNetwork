@@ -74,6 +74,7 @@ private:
     }
 public:
     Status ServerLogin(ServerContext* context, const ReplyStatus* msgStat, ReplyStatus* replyStat) override {
+		//git test
         //TODO add ability for crashed master to retake its spot in the vector
         std::string serverInfo = context->peer();
         IPInfo newServer = getIPInfo(serverInfo);
