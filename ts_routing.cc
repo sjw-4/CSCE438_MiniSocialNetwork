@@ -33,7 +33,7 @@ IPInfo getIPInfo(std::string unformatted) {
     std::string curStr = "";
     for(int i = 0; i < unformatted.length(); i++) {
         if(counter == 0) {
-            if(unformatted.at(i) != ':')
+            if(unformatted.at(i) == ':')
                 counter++;
             continue;
         }
