@@ -7,6 +7,12 @@
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
 
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientReaderWriter;
+using grpc::ClientWriter;
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -402,10 +408,10 @@ public:
         replyStat->set_stat("0");
         return Status::OK;
     }
-    Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
+    /*Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
         replyStat->set_stat("0");
         return Status::OK;
-    }
+    }*/
 };
 
 void runServer(std::string serverAddr) {
@@ -419,8 +425,6 @@ void runServer(std::string serverAddr) {
 }
 
 int main(int argc, char** argv) {
-    std::string port = "3010";
-
     std::string rIP = "localhost";
     std::string rPort = "3010";
     std::string port = "3010";
