@@ -84,9 +84,10 @@ public:
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
-        if(rStat->stat() != -1) {
+        std::string rStatS = rStat->stat();
+        if(rStatS != "-1") {
             for(int i = 0; i < servers.size(); i++) {
-                if(servers.at(i).idNum.equals(rStat->stat())) {
+                if(servers.at(i).alive == true && rStatS.compare(servers.at(i).idNum) == 0) {
                     servers.at(i).alive = false;
                     selectNewMaster();
                 }
