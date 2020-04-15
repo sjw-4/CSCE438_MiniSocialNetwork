@@ -34,6 +34,9 @@ private:
     std::string fileName = "userdata.txt";
     bool dataLoaded = false;
 
+    std::string routingIP;
+    std::string routingPort;
+
     //Finds a user from the passed name, returns false if not found
     bool getUser(std::string _name, UserInfo& user) {
         for(int i = 0; i < allUsers.size(); i++) {
@@ -399,9 +402,10 @@ public:
         replyStat->set_stat("0");
         return Status::OK;
     }
-    /*Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
+    Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
+        replyStat->set_stat("0");
         return Status::OK;
-    }*/
+    }
 };
 
 void runServer(std::string serverAddr) {
@@ -417,9 +421,31 @@ void runServer(std::string serverAddr) {
 int main(int argc, char** argv) {
     std::string port = "3010";
 
-    if(argc > 1) {
-        port = argv[argc - 1];
+    std::string rIP = "localhost";
+    std::string rPort = "3010";
+    std::string port = "3010";
+    int opt = 0;
+    while ((opt = getopt(argc, argv, "h:r:p:")) != -1){
+        switch(opt) {
+            case 'h':
+                rIP = optarg;break;
+            case 'r':
+                rPort = optarg;break;
+            case 'p':
+                port = optarg;break;
+            default:
+                std::cerr << "Invalid Command Line Argument\n";
+        }
     }
+
+    std::unique_ptr<TinySocial::Stub> stub_;
+    std::shared_ptr<Channel> channel = grpc::CreateChannel(rIP + ":" + rPort, grpc::InsecureChannelCredentials());
+    stub_ = TinySocial::NewStub(channel);
+    ClientContext context;
+    ServerInfo tsServer;
+    ReplyStatus sStat; sStat.set_stat("0");
+    ReplyStatus rStat;
+    Status stat = stub_->ServerLogin(&context, sStat, &rStat);
 
     runServer("0.0.0.0:" + port);
 

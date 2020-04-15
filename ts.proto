@@ -14,7 +14,7 @@ service TinySocial {
     rpc Follow(User) returns (ReplyStatus) {}
     rpc GetTimeline(User) returns (stream Post) {}
     rpc PostTimeline(NewPost) returns (ReplyStatus) {}
-    //TODOrpc HeartBeat(User) returns (ReplyStatus) {}
+    rpc HeartBeat(ReplyStatus) returns (ReplyStatus) {}
     rpc GetServerInfo(User) returns (ServerInfo) {}
     rpc ServerLogin(ReplyStatus) returns (ReplyStatus) {}
 }

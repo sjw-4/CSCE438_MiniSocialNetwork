@@ -55,21 +55,34 @@ class TinySocialRouting final : public TinySocial::Service {
 private:
     std::vector<IPInfo> servers;
     IPInfo curMaster;
+    void selectNewMaster() {    //TODO full implimentation
+        for(int i = 0; i < servers.size(); i++) {
+            if(servers.at(i).alive) {
+                curMaster = servers.at(i);
+                return;
+            }
+        }
+        //if you get here, things are very bad
+        std::cout << "NO SERVERS AVAILABLE... OOF" << std::endl;
+    }
 public:
     Status ServerLogin(ServerContext* context, const ReplyStatus* msgStat, ReplyStatus* replyStat) override {
-        /*if(msgStat != "0") {
-            std::cout << "routing::ServerLogin::Error" << std::endl;
-            return Status::OK;
-        }*/
         std::string serverInfo = context->peer();
-        IPInfo temp = getIPInfo(serverInfo);
-        std::cout << "Testing server info: " << std::endl << temp.ipAddress << std::endl << temp.portNo << std::endl;
-        //TODO set curMaster if none is set
+        IPInfo newServer = getIPInfo(serverInfo);
+        servers.push_back(newServer);
+        if(curMaster == NULL) {
+            selectNewMaster();
+        }
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const User* user, ServerInfo* si) override {
-        //TODO
-        //si = curMaster;
+        //Make sure master is still there
+        si->serverIP = curMaster.ipAddress;
+        si->serverPort = curMaster.portNo;
+        return Status::OK;
+    }
+    Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
+        replyStat->set_stat("0");
         return Status::OK;
     }
 };
@@ -92,6 +105,8 @@ int main(int argc, char** argv) {
     }
 
     runServer("0.0.0.0:" + port);
+
+    curMaster == NULL;
 
     return 0;
 }
