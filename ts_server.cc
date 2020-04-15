@@ -24,6 +24,7 @@ using tinysocial::User;
 using tinysocial::ReplyStatus;
 using tinysocial::Post;
 using tinysocial::NewPost;
+using tinysocial::ServerInfo;
 using tinysocial::TinySocial;
 
 struct UserInfo {
