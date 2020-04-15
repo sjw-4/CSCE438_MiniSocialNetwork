@@ -72,12 +72,14 @@ class IClient
 void IClient::run()
 {
     while(true) {
+        std::cout << "Connecting to routing" << std::endl;
         int ret = connectTo(true);
         if (ret < 0) {
             std::cout << "connection to routing server failed: " << ret << std::endl;
             exit(1);
         }
 
+        std::cout << "Connecting to main server" << std::endl;
         ret = connectTo(false);
         if (ret < 0) {
             std::cout << "connection failed: " << ret << std::endl;
@@ -85,6 +87,7 @@ void IClient::run()
         else {
             IReply reply;
             do {
+                std::cout << "Command mode" << std::endl;
                 std::string cmd = getCommand();
                 reply = processCommand(cmd);
                 displayCommandReply(cmd, reply);

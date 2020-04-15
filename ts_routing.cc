@@ -64,6 +64,7 @@ private:
         for(int i = 0; i < servers.size(); i++) {
             if(servers.at(i).alive) {
                 curMaster = servers.at(i);
+                std::cout << "New master selected: " << curMaster.idNum << std::endl;
                 return;
             }
         }
@@ -79,7 +80,7 @@ public:
         if(servers.size() == 1) {
             selectNewMaster();
         }
-        std::cout << "Added server" << std::endl;
+        std::cout << "Added server: " << servers.at(servers.size() - 1) << std::endl;
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
