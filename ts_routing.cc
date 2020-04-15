@@ -27,6 +27,30 @@ struct IPInfo {
     bool alive;
 };
 
+IPInfo getIPInfo(std::string unformatted) {
+    IPInfo newIP;
+    int counter = 0;
+    std::string curStr = "";
+    for(int i = 0; i < unformatted.length(); i++) {
+        if(counter == 0) {
+            if(unformatted.at(i) != ":")
+                counter++;
+            continue;
+        }
+        else if(unformatted.at(i) == ":" && counter == 1) {
+            newIP.ipAddress = curStr;
+            curStr = "";
+            counter++;
+        }
+        else {
+            curStr.append(unformatted.at(i));
+        }
+    }
+    newIP.portNo = curStr;
+    newIP.alive = true;
+    return newIP;
+}
+
 class TinySocialRouting final : public TinySocial::Service {
 private:
     std::vector<IPInfo> servers;
@@ -38,7 +62,8 @@ public:
             return Status::OK;
         }*/
         std::string serverInfo = context->peer();
-        std::cout << "Connected peer address is: " << serverInfo << std::endl;
+        IPInfo temp = getIPInfo(serverInfo);
+        std::cout << "Testing server info: " << std::endl << temp.ipAddress << std::endl << temp.portNo << std::endl;
         //TODO set curMaster if none is set
         return Status::OK;
     }
