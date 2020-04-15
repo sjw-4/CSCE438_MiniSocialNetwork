@@ -77,8 +77,8 @@ public:
     }
     Status GetServerInfo(ServerContext* context, const User* user, ServerInfo* si) override {
         //Make sure master is still there
-        si->set_serverIP(curMaster.ipAddress);
-        si->set_serverPort(curMaster.portNo);
+        si->set_serverip(curMaster.ipAddress);
+        si->set_serverport(curMaster.portNo);
         return Status::OK;
     }
     /*Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
