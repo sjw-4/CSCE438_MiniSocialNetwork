@@ -448,9 +448,11 @@ int main(int argc, char** argv) {
     stub_ = TinySocial::NewStub(channel);
     ClientContext context;
     ServerInfo tsServer;
-    ReplyStatus sStat; sStat.set_stat("0");
+    ReplyStatus sStat; sStat.set_stat(p);
     ReplyStatus rStat;
     Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+
+    std::cout << "Starting server" << std::endl;
 
     runServer("0.0.0.0:" + port);
 

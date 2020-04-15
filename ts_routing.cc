@@ -69,10 +69,12 @@ public:
     Status ServerLogin(ServerContext* context, const ReplyStatus* msgStat, ReplyStatus* replyStat) override {
         std::string serverInfo = context->peer();
         IPInfo newServer = getIPInfo(serverInfo);
+        newServer.portNo = msgStat.stat();
         servers.push_back(newServer);
         if(servers.size() == 1) {
             selectNewMaster();
         }
+        std::cout << "Added server" << std::endl;
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const User* user, ServerInfo* si) override {
