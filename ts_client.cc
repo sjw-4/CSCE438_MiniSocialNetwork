@@ -189,37 +189,30 @@ IReply Client::processCommand(std::string& input)
         std::vector<std::string> allUsers;  //Vector to hold all users
         user.set_name(username);
         //Get reader to read all sent usernames
-        std::cout << "made it here" <<std::endl;
         std::unique_ptr<ClientReader<User> > reader(stub_->GetList(&context, user));
-        std::cout << "made it here2" <<std::endl;
         while(reader->Read(&users)) {
             allUsers.push_back(users.name());
         }
-        std::cout << "made it here3" <<std::endl;
         //begin setting values in IReply
         myReply.grpc_status = reader->Finish();
-        std::cout << "made it here4" <<std::endl;
+        myReply.comm_status = checkForError("5");
 
         //Check to make sure a connection was established
-        if(allUsers.size() == 0) {
-            std::cout << "Bad connection on LIST command" << std::endl;
-            myReply.comm_status = checkForError("5");
-            return myReply;
-        }
-
-        myReply.comm_status = checkForError(allUsers.at(0));
-        //The server inserts an END_OF_FOLLOWERS string to indicate where the list goes from followers to all other users
-        for(int i = 0; i < allUsers.size(); i++) {
-            if(allUsers.at(i) == "END_OF_FOLLOWERS") {
-                i++;
-                while(i < allUsers.size()) {
-                    myReply.all_users.push_back(allUsers.at(i));
+        if(allUsers.size() != 0) {
+            myReply.comm_status = checkForError(allUsers.at(0));
+            //The server inserts an END_OF_FOLLOWERS string to indicate where the list goes from followers to all other users
+            for(int i = 0; i < allUsers.size(); i++) {
+                if(allUsers.at(i) == "END_OF_FOLLOWERS") {
                     i++;
+                    while(i < allUsers.size()) {
+                        myReply.all_users.push_back(allUsers.at(i));
+                        i++;
+                    }
+                    break;
                 }
-                break;
+                else
+                    myReply.followers.push_back(allUsers.at(i));
             }
-            else
-                myReply.followers.push_back(allUsers.at(i));
         }
     }
     else if(strncmp(input.c_str(), "FOLLOW ", 7) == 0) {
@@ -362,13 +355,13 @@ void Client::processTimeline()
                     newPost = false;
                 }
             }
-	        Status s = reader->Finish();
+	        Status readerStat = reader->Finish();
             for(int j = 0; j < posts.size(); j++) {
                 time_t tempTime = posts.at(j).time();
                 displayPostMessage(posts.at(j).name(), posts.at(j).posttext(), tempTime);
                 lastPost = posts.at(j).time();
             }
-            if(!s.ok()) {
+            if(!readerStat.ok()) {
                 std::cout << "Error in getting update timeline" << std::endl;
             }
         }
