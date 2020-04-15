@@ -70,21 +70,21 @@ public:
         std::string serverInfo = context->peer();
         IPInfo newServer = getIPInfo(serverInfo);
         servers.push_back(newServer);
-        if(curMaster == NULL) {
+        if(servers.size() == 1) {
             selectNewMaster();
         }
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const User* user, ServerInfo* si) override {
         //Make sure master is still there
-        si->serverIP = curMaster.ipAddress;
-        si->serverPort = curMaster.portNo;
+        si->set_serverIP(curMaster.ipAddress);
+        si->set_serverPort(curMaster.portNo);
         return Status::OK;
     }
-    Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
+    /*Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
         replyStat->set_stat("0");
         return Status::OK;
-    }
+    }*/
 };
 
 void runServer(std::string serverAddr) {
@@ -105,8 +105,6 @@ int main(int argc, char** argv) {
     }
 
     runServer("0.0.0.0:" + port);
-
-    curMaster == NULL;
 
     return 0;
 }
