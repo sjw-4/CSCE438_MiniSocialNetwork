@@ -27,7 +27,7 @@ int curMaxId = 0;
 struct IPInfo {
     std::string ipAddress;
     std::string portNo;
-    int idNum;
+    std::string idNum;
     bool alive;
 };
 
@@ -86,8 +86,8 @@ public:
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
         if(rStat->stat() != -1) {
             for(int i = 0; i < servers.size(); i++) {
-                if(servers(i).idNum.equals(rStat->stat())) {
-                    servers(i).alive = false;
+                if(servers.at(i).idNum.equals(rStat->stat())) {
+                    servers.at(i).alive = false;
                     selectNewMaster();
                 }
             }
