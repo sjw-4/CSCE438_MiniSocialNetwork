@@ -154,14 +154,14 @@ int Client::connectTo(bool routingServer)
         ClientContext context;
         ServerInfo tsServer;
         ReplyStatus rStat;
-        if(serverID == NULL) {
+        if(serverID == "") {
             rStat.set_stat("-1");
         }
         else {
             rStat.set_stat(serverID);
         }
         ServerInfo si;
-        Status stat = stub_->GetServerInfo(&context, curUser, &si);
+        Status stat = stub_->GetServerInfo(&context, rStat, &si);
         tss_hostname = si.serverip();
         tss_port = si.serverport();
     }
