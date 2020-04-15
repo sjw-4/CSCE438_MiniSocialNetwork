@@ -74,6 +74,7 @@ private:
     }
 public:
     Status ServerLogin(ServerContext* context, const ReplyStatus* msgStat, ReplyStatus* replyStat) override {
+        //TODO add ability for crashed master to retake its spot in the vector
         std::string serverInfo = context->peer();
         IPInfo newServer = getIPInfo(serverInfo);
         newServer.portNo = msgStat->stat();
@@ -85,6 +86,7 @@ public:
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
+        //TODO add check to make sure master is still alive
         std::string rStatS = rStat->stat();
         std::cout << "GetServerInfo:rStat is: " << rStatS << std::endl;
         if(rStatS != "-1") {
