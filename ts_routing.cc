@@ -43,7 +43,7 @@ IPInfo getIPInfo(std::string unformatted) {
             counter++;
         }
         else {
-            curStr.append(unformatted.at(i));
+            curStr += unformatted.at(i);
         }
     }
     newIP.portNo = curStr;
