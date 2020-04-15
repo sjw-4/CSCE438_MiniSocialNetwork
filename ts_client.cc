@@ -207,7 +207,7 @@ IReply Client::processCommand(std::string& input)
                 break;
             }
             else
-                myReply.following_users.push_back(allUsers.at(i));
+                myReply.followers.push_back(allUsers.at(i));
         }
     }
     else if(strncmp(input.c_str(), "FOLLOW ", 7) == 0) {
@@ -288,7 +288,7 @@ IReply Client::processCommand(std::string& input)
     // 
     // IMPORTANT: 
     // For the command "LIST", you should set both "all_users" and 
-    // "following_users" member variable of IReply.
+    // "followers" member variable of IReply.
 	// ------------------------------------------------------------
 }
 
