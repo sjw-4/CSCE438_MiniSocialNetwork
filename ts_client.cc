@@ -189,12 +189,16 @@ IReply Client::processCommand(std::string& input)
         std::vector<std::string> allUsers;  //Vector to hold all users
         user.set_name(username);
         //Get reader to read all sent usernames
+        std::cout << "made it here" <<std::endl;
         std::unique_ptr<ClientReader<User> > reader(stub_->GetList(&context, user));
+        std::cout << "made it here2" <<std::endl;
         while(reader->Read(&users)) {
             allUsers.push_back(users.name());
         }
+        std::cout << "made it here3" <<std::endl;
         //begin setting values in IReply
         myReply.grpc_status = reader->Finish();
+        std::cout << "made it here4" <<std::endl;
 
         //Check to make sure a connection was established
         if(allUsers.size() == 0) {
