@@ -86,7 +86,7 @@ public:
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
         std::string rStatS = rStat->stat();
-        std::cout << "GetServerInfo:rStat is: " << rStats << std::endl;
+        std::cout << "GetServerInfo:rStat is: " << rStatS << std::endl;
         if(rStatS != "-1") {
             for(int i = 0; i < servers.size(); i++) {
                 if(servers.at(i).alive == true && rStatS.compare(servers.at(i).idNum) == 0) {
