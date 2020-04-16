@@ -27,6 +27,12 @@ using tinysocial::NewPost;
 using tinysocial::ServerInfo;
 using tinysocial::TinySocial;
 
+//Global vars
+std::string routingIP;
+std::string routingPort;
+std::string port;
+pid_t childPid;
+
 struct UserInfo {
     User userMsg;
     std::string name;
@@ -40,9 +46,6 @@ private:
     std::vector<UserInfo> allUsers;
     std::string fileName = "userdata.txt";
     bool dataLoaded = false;
-
-    std::string routingIP;
-    std::string routingPort;
 
     //Finds a user from the passed name, returns false if not found
     bool getUser(std::string _name, UserInfo& user) {
@@ -411,6 +414,25 @@ public:
     }
     Status HeartBeat(ServerContext* context, const ReplyStatus* sentStat, ReplyStatus* replyStat) override {
         replyStat->set_stat("0");
+        int status;
+        pid_t result = waitpid(childPid, &status, WNOHANG);
+        if(result == 0) {
+            continue;
+        }
+        else if(result == -1) {
+            std::cout << "Error checking on child, exiting" << std::endl;
+            exit(1);
+        }
+        else {
+            pid_t pd = fork();
+            if(pd == 0) {
+                std::cout << "Slave died, creating new one" << std::endl;
+                char * argv_list[] = {"-h", routingIP, "-r" routingPort, "-p", port, "-s", "1"};
+                execv("./ts_server", argv_list);
+                exit();
+            }
+            childPid = pd;
+        }
         return Status::OK;
     }
 };
@@ -426,25 +448,71 @@ void runServer(std::string serverAddr) {
 }
 
 int main(int argc, char** argv) {
-    std::string rIP = "localhost";
-    std::string rPort = "3010";
-    std::string port = "3010";
+    routingIP = "localhost";
+    routingPort = "3010";
+    port = "3010";
+    std::string isSlave = "0";
     int opt = 0;
-    while ((opt = getopt(argc, argv, "h:r:p:")) != -1){
+    while ((opt = getopt(argc, argv, "h:r:p:s:")) != -1){
         switch(opt) {
             case 'h':
-                rIP = optarg;break;
+                routingIP = optarg;break;
             case 'r':
-                rPort = optarg;break;
+                routingPort = optarg;break;
             case 'p':
                 port = optarg;break;
+            case 's':
+                isSlave = optarg;break;
             default:
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }
+    if(isSlave.compare("1") == 0) {
+        //same chile process as below
+        Status stat;
+        std::unique_ptr<TinySocial::Stub> stub_;
+        std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
+        stub_ = TinySocial::NewStub(channel);
+        ClientContext context;
+        ServerInfo tsServer;
+        ReplyStatus sStat; sStat.set_stat(port);
+        ReplyStatus rStat;
+        do {
+            usleep(1000000);    //sleep for 1 second
+            Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+        } while(stat.ok());
+    }
+
+    std::cout << "Fork called" << std::endl;
+    pid_t pd = fork();
+    if(pd == 0) {
+        //Child process does his thing here
+        Status stat;
+        std::unique_ptr<TinySocial::Stub> stub_;
+        std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
+        stub_ = TinySocial::NewStub(channel);
+        ClientContext context;
+        ServerInfo tsServer;
+        ReplyStatus sStat; sStat.set_stat(port);
+        ReplyStatus rStat;
+        do {
+            usleep(1000000);    //sleep for 1 second
+            Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+        } while(stat.ok());
+        std::cout << "Master killed, creating new slave" << std::endl;
+        pd = fork();
+            if(pd == 0) {
+                std::cout << "Slave died, creating new one" << std::endl;
+                char * argv_list[] = {"-h", routingIP, "-r" routingPort, "-p", port, "-s", "1"};
+                execv("./ts_server", argv_list);
+                exit();
+            }
+    }
+    childPid = pd;
+    //parent process
 
     std::unique_ptr<TinySocial::Stub> stub_;
-    std::shared_ptr<Channel> channel = grpc::CreateChannel(rIP + ":" + rPort, grpc::InsecureChannelCredentials());
+    std::shared_ptr<Channel> channel = grpc::CreateChannel(routingIP + ":" + routingPort, grpc::InsecureChannelCredentials());
     stub_ = TinySocial::NewStub(channel);
     ClientContext context;
     ServerInfo tsServer;

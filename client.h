@@ -120,6 +120,7 @@ void IClient::run()
         }
         else {
             IReply reply;
+            displayTitle();
             std::cout << "Command mode" << std::endl;
             bool enteredTimeline = false;
             do {
