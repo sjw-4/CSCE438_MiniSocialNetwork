@@ -486,11 +486,10 @@ int main(int argc, char** argv) {
         std::unique_ptr<TinySocial::Stub> stub_;
         std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
         stub_ = TinySocial::NewStub(channel);
-        ClientContext context;
-        ServerInfo tsServer;
-        ReplyStatus sStat; sStat.set_stat("-1");
         do {
             usleep(5000000);    //sleep for 1 second
+            ClientContext context;
+            ReplyStatus sStat; sStat.set_stat("-1");
             ReplyStatus rStat;
             std::cout << "Calling hearbeat" << std::endl;
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
