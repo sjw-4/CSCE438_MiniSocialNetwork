@@ -482,19 +482,21 @@ int main(int argc, char** argv) {
     }
     if(isSlave.compare("1") == 0) {
         //same chile process as below
-        Status stat;
+        bool gotHeartbeat = false;
         std::unique_ptr<TinySocial::Stub> stub_;
         std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
         stub_ = TinySocial::NewStub(channel);
         ClientContext context;
         ServerInfo tsServer;
         ReplyStatus sStat; sStat.set_stat("-1");
-        ReplyStatus rStat;
         do {
             usleep(5000000);    //sleep for 1 second
+            ReplyStatus rStat;
+            Status stat;
             std::cout << "Calling hearbeat" << std::endl;
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
-        } while(stat.ok());
+            gotHeartbeat = stat.ok();
+        } while(gotHeartbeat);
     }
 
     std::cout << "Fork called" << std::endl;
