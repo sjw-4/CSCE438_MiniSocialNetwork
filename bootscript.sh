@@ -3,5 +3,5 @@
 make
 if [ "$1" == "ts_server" ]
 then
-	ts_server
+	./ts_server 
 fi
