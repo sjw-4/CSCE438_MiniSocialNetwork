@@ -366,7 +366,8 @@ void Client::processTimeline()
 }
 
 IReply Client::doHeartBeat() {
+    ClientContext context;
     ReplyStatus sStatus, rStatus;
     sStatus.set_stat("0");
-    return = _stub->HeartBeat(&context, sStatus, &rStatus);
+    return stub_->HeartBeat(&context, sStatus, &rStatus);
 }
