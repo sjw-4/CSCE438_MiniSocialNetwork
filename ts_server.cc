@@ -491,7 +491,7 @@ int main(int argc, char** argv) {
         ReplyStatus sStat; sStat.set_stat("-1");
         ReplyStatus rStat;
         do {
-            usleep(1000000);    //sleep for 1 second
+            usleep(5000000);    //sleep for 1 second
             std::cout << "Calling hearbeat" << std::endl;
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
         } while(stat.ok());
