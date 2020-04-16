@@ -492,7 +492,6 @@ int main(int argc, char** argv) {
         do {
             usleep(5000000);    //sleep for 1 second
             ReplyStatus rStat;
-            Status stat;
             std::cout << "Calling hearbeat" << std::endl;
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
             gotHeartbeat = stat.ok();
