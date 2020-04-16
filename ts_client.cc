@@ -325,6 +325,7 @@ void Client::processTimeline()
             }
         }
         else {
+            doHeartBeat();
             User user;
             Post post;
             enum IStatus stat;
