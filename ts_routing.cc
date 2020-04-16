@@ -101,7 +101,7 @@ public:
             stub_ = TinySocial::NewStub(channel);
             ClientContext context;
             ServerInfo tsServer;
-            ReplyStatus sStat; sStat.set_stat(port);
+            ReplyStatus sStat; sStat.set_stat("0");
             ReplyStatus rStat;
             grpc_status = stub_->HeartBeat(&context, sStat, &rStat);
             if(!grpc_status.ok()) {
