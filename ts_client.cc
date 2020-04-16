@@ -42,6 +42,7 @@ class Client : public IClient
         virtual int connectTo(bool routingServer);
         virtual IReply processCommand(std::string& input);
         virtual void processTimeline();
+        virtual IReply doHeartBeat();
     private:
         std::string hostname;
         std::string username;
