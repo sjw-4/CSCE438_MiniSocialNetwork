@@ -442,7 +442,6 @@ public:
         return Status::OK;
     }
     Status HeartBeat(ServerContext* context, const ReplyStatus* sentStat, ReplyStatus* replyStat) override {
-        std::cout << "Recieving hearbeat" << std::endl;
         replyStat->set_stat("0");
         if(sentStat->stat() != "-1")
             checkChileProc();
@@ -491,7 +490,6 @@ int main(int argc, char** argv) {
             ClientContext context;
             ReplyStatus sStat; sStat.set_stat("-1");
             ReplyStatus rStat;
-            std::cout << "Calling hearbeat" << std::endl;
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
             gotHeartbeat = stat.ok();
         } while(gotHeartbeat);
