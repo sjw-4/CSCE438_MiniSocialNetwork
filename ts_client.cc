@@ -369,5 +369,7 @@ IReply Client::doHeartBeat() {
     ClientContext context;
     ReplyStatus sStatus, rStatus;
     sStatus.set_stat("0");
-    return stub_->HeartBeat(&context, sStatus, &rStatus);
+    IReply temp;
+    temp.grpc_status = stub_->HeartBeat(&context, sStatus, &rStatus);
+    return temp;
 }
