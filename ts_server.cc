@@ -426,7 +426,7 @@ public:
                 pid_t pd = fork();
                 if(pd == 0) {
                     std::cout << "Slave died, creating new one" << std::endl;
-                    char * argv_list[] = {"-h", routingIP, "-r", routingPort, "-p", port, "-s", "1", NULL};
+                    char * argv_list[] = {"-h", routingIP.c_str(), "-r", routingPort.c_str(), "-p", port.c_str(), "-s", "1", NULL};
                     execv("./ts_server", argv_list);
                     exit();
                 }
