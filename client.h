@@ -86,37 +86,26 @@ void IClient::run()
         }
         else {
             IReply reply;
+            std::cout << "Command mode" << std::endl;
+            bool enteredTimeline = false;
             do {
-                std::cout << "Command mode" << std::endl;
-                std::string cmd = getCommand();
-                reply = processCommand(cmd);
-                displayCommandReply(cmd, reply);
-                if (reply.grpc_status.ok() && reply.comm_status == SUCCESS && cmd == "TIMELINE") {
-                    std::cout << "Now you are in the timeline" << std::endl;
-                    processTimeline();
-                    break;
+                if(userInputReady(100000)) {
+                    std::string cmd = getCommand();
+                    reply = processCommand(cmd);
+                    displayCommandReply(cmd, reply);
+                    if (reply.grpc_status.ok() && reply.comm_status == SUCCESS && cmd == "TIMELINE") {
+                        std::cout << "Now you are in the timeline" << std::endl;
+                        enteredTimeline = true;
+                        processTimeline();
+                    }
+                } else {
+                    ReplyStatus rStatus, sStatus;
+                    sStatus.set_stat("0");
+                    reply.grpc_status = _stub->HeartBeat(&context, sStatus, &rStatus);
                 }
-            } while(reply.grpc_status.ok());
+            } while(reply.grpc_status.ok() && ! enteredTimeline);
         }
     }
-    /*
-    int ret = connectTo();
-    if (ret < 0) {
-        std::cout << "connection failed: " << ret << std::endl;
-        exit(1);
-    }
-    displayTitle();
-    while (1) {
-        std::string cmd = getCommand();
-        IReply reply = processCommand(cmd);
-        displayCommandReply(cmd, reply);
-        if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
-                && cmd == "TIMELINE") {
-            std::cout << "Now you are in the timeline" << std::endl;
-            processTimeline();
-        }
-    }
-    */
 }
 
 void IClient::displayTitle() const
@@ -227,4 +216,8 @@ void displayPostMessage(const std::string& sender, const std::string& message, s
     std::string t_str(std::ctime(&time));
     t_str[t_str.size()-1] = '\0';
     std::cout << sender << "(" << t_str << ") >> " << message << std::endl;
+}
+
+void displayReConnectionMessage(const std::string& host, const std::string& port) {
+    std::cout << "Reconnecting to " << host << ":" << port << "..." << std::endl;
 }

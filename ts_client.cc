@@ -168,6 +168,7 @@ int Client::connectTo(bool routingServer)
         serverID = si.serverid();
     }
     else {
+        displayReConnectionMessage(tss_hostname, tss_port);
         std::shared_ptr<Channel> channel = grpc::CreateChannel(tss_hostname + ":" + tss_port, grpc::InsecureChannelCredentials());
         stub_ = TinySocial::NewStub(channel);
         ClientContext context;

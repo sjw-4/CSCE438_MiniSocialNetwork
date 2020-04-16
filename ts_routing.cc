@@ -8,6 +8,12 @@
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
 
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientReaderWriter;
+using grpc::ClientWriter;
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -87,7 +93,28 @@ public:
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
-        //TODO add check to make sure master is still alive
+        //Check to make sure current master is still alive
+        grpc::Status grpc_status;
+        do {
+            std::unique_ptr<TinySocial::Stub> stub_;
+            std::shared_ptr<Channel> channel = grpc::CreateChannel(curMaster.ipAddress + ":" + curMaster.portNo, grpc::InsecureChannelCredentials());
+            stub_ = TinySocial::NewStub(channel);
+            ClientContext context;
+            ServerInfo tsServer;
+            ReplyStatus sStat; sStat.set_stat(port);
+            ReplyStatus rStat;
+            grpc_status = stub_->HeartBeat(&context, sStat, &rStat);
+            if(!grpc_status.ok()) {
+                for(int i = 0; i < servers.size(); i++) {
+                    if(servers.at(i).alive == true && curMaster.idNum.compare(servers.at(i).idNum) == 0) {
+                        servers.at(i).alive = false;
+                        selectNewMaster();
+                        break;
+                    }
+                }
+            }
+        } while(!grpc_status.ok());
+
         std::string rStatS = rStat->stat();
         std::cout << "GetServerInfo:rStat is: " << rStatS << std::endl;
         if(rStatS != "-1") {
@@ -95,6 +122,7 @@ public:
                 if(servers.at(i).alive == true && rStatS.compare(servers.at(i).idNum) == 0) {
                     servers.at(i).alive = false;
                     selectNewMaster();
+                    break;
                 }
             }
         }
