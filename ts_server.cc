@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <sys/wait.h>
 
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
@@ -416,22 +417,21 @@ public:
         replyStat->set_stat("0");
         int status;
         pid_t result = waitpid(childPid, &status, WNOHANG);
-        if(result == 0) {
-            continue;
-        }
-        else if(result == -1) {
-            std::cout << "Error checking on child, exiting" << std::endl;
-            exit(1);
-        }
-        else {
-            pid_t pd = fork();
-            if(pd == 0) {
-                std::cout << "Slave died, creating new one" << std::endl;
-                char * argv_list[] = {"-h", routingIP, "-r" routingPort, "-p", port, "-s", "1"};
-                execv("./ts_server", argv_list);
-                exit();
+        if(result != 0) {
+            if(result == -1) {
+                std::cout << "Error checking on child, exiting" << std::endl;
+                exit(1);
             }
-            childPid = pd;
+            else {
+                pid_t pd = fork();
+                if(pd == 0) {
+                    std::cout << "Slave died, creating new one" << std::endl;
+                    char * argv_list[] = {"-h", routingIP, "-r", routingPort, "-p", port, "-s", "1", NULL};
+                    execv("./ts_server", argv_list);
+                    exit();
+                }
+                childPid = pd;
+            }
         }
         return Status::OK;
     }
@@ -503,7 +503,7 @@ int main(int argc, char** argv) {
         pd = fork();
             if(pd == 0) {
                 std::cout << "Slave died, creating new one" << std::endl;
-                char * argv_list[] = {"-h", routingIP, "-r" routingPort, "-p", port, "-s", "1"};
+                char * argv_list[] = {"-h", routingIP, "-r", routingPort, "-p", port, "-s", "1"};
                 execv("./ts_server", argv_list);
                 exit();
             }
