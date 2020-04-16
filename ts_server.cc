@@ -485,7 +485,7 @@ int main(int argc, char** argv) {
         ReplyStatus rStat;
         do {
             usleep(1000000);    //sleep for 1 second
-            Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+            Status stat = stub_->HeartBeat(&context, sStat, &rStat);
         } while(stat.ok());
     }
 
@@ -503,7 +503,7 @@ int main(int argc, char** argv) {
         ReplyStatus rStat;
         do {
             usleep(1000000);    //sleep for 1 second
-            Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+            Status stat = stub_->HeartBeat(&context, sStat, &rStat);
         } while(stat.ok());
         std::cout << "Master killed, creating new slave" << std::endl;
         pd = fork();
