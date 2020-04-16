@@ -426,8 +426,14 @@ public:
                 pid_t pd = fork();
                 if(pd == 0) {
                     std::cout << "Slave died, creating new one" << std::endl;
-                    char * argv_list[] = {"-h", routingIP.c_str(), "-r", routingPort.c_str(), "-p", port.c_str(), "-s", "1", NULL};
+
+                    char * rIP_c = new char[routingIP.size() + 1];          char * rP_c = new char[routingPort.size() + 1];             char * p_c = new char[port.size() + 1];
+                    std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
+                    rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
+
+                    char * argv_list[] = {"-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
                     execv("./ts_server", argv_list);
+                    delete[] rIP_c; delete[] rP_c; delete[] p_c;
                     exit();
                 }
                 childPid = pd;
