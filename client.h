@@ -58,6 +58,7 @@ class IClient
         virtual int connectTo(bool routingServer) = 0;
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual void processTimeline() = 0;
+        virtual IReply doHeartBeat() = 0;
 
     private:
 
@@ -99,9 +100,7 @@ void IClient::run()
                         processTimeline();
                     }
                 } else {
-                    ReplyStatus rStatus, sStatus;
-                    sStatus.set_stat("0");
-                    reply.grpc_status = _stub->HeartBeat(&context, sStatus, &rStatus);
+                    reply = doHeartBeat();
                 }
             } while(reply.grpc_status.ok() && ! enteredTimeline);
         }
@@ -220,4 +219,37 @@ void displayPostMessage(const std::string& sender, const std::string& message, s
 
 void displayReConnectionMessage(const std::string& host, const std::string& port) {
     std::cout << "Reconnecting to " << host << ":" << port << "..." << std::endl;
+}
+
+bool userInputReady(unsigned int timeoutUSec) {
+    //Checks if the user has submitted input
+    //Used by processTimeline to update the timeline without blocking while
+    //waiting for user input
+
+    //Set timeout value, recommended 100,000 -> .1 seconds
+    struct timeval timeout;
+	timeout.tv_sec = 0;
+	timeout.tv_usec = timeoutUSec;
+
+    //Set fd info
+    int fds[1];
+    int numReady;
+    fd_set r_fd;
+    fds[0] = STDIN_FILENO;
+    int maxFd = STDIN_FILENO + 1;
+    FD_SET(fds[0], &r_fd);
+
+    //Select call
+    numReady = select(maxFd, &r_fd, NULL, NULL, &timeout);
+    if(numReady == -1 && errno == EINTR)	//was interrupted, return false to be safe
+		return false;
+	else if(numReady == -1) {	//Something went very wrong, time to exit
+		printf("ts_client::userInputReady::Error on select, exiting");
+		exit(1);
+	}
+	else if(numReady == 0) {	//select() timed out, return false
+		return false;
+	}
+    else    //input is ready, let user know
+        return true;
 }
