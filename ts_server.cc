@@ -508,9 +508,11 @@ int main(int argc, char** argv) {
     ServerInfo tsServer;
     ReplyStatus sStat; sStat.set_stat(port);
     ReplyStatus rStat;
-    std::cout << "Contacting routing server" << std::endl;
-    Status stat = stub_->ServerLogin(&context, sStat, &rStat);
-    std::cout << "Routing server connection: " << stat.ok() << std::endl;
+    Status stat;
+    do {
+        std::cout << "Contacting routing server" << std::endl;
+        stat = stub_->ServerLogin(&context, sStat, &rStat);
+    } while(!stat.ok());
 
     std::cout << "Starting server" << std::endl;
 
