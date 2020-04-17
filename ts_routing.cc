@@ -39,6 +39,7 @@ struct IPInfo {
 };
 
 IPInfo getIPInfo(std::string unformatted) {
+    //Formats IP info from the stub metadata
     IPInfo newIP;
     int counter = 0;
     std::string curStr = "";
@@ -67,21 +68,36 @@ class TinySocialRouting final : public TinySocial::Service {
 private:
     std::vector<IPInfo> servers;
     IPInfo curMaster;
-    void selectNewMaster() {    //TODO full implimentation
+    void selectNewMaster() {
+        //Algorithm: selects system with the lowest ID number that is alive
         for(int i = 0; i < servers.size(); i++) {
             if(servers.at(i).alive) {
                 curMaster = servers.at(i);
-                std::cout << "New master selected: " << curMaster.idNum << std::endl;
+                std::cout << "New available server selected- IP: " << curMaster.ipAddress << ", ID: " << curMaster.idNum << std::endl;
                 return;
             }
         }
-        //if you get here, things are very bad
-        std::cout << "NO SERVERS AVAILABLE... OOF" << std::endl;
+        std::cout << "No servers available, doing final check. Please wait..." << std::endl;
+        for(int i = 0; i < servers.size(); i++) {
+            std::unique_ptr<TinySocial::Stub> stub_;
+            std::shared_ptr<Channel> channel = grpc::CreateChannel(servers(i).ipAddress + ":" + servers(i).portNo, grpc::InsecureChannelCredentials());
+            stub_ = TinySocial::NewStub(channel);
+            ClientContext context;
+            ServerInfo tsServer;
+            ReplyStatus sStat; sStat.set_stat("0");
+            ReplyStatus rStat;
+            grpc::Status grpc_status = stub_->HeartBeat(&context, sStat, &rStat);
+            if(grpc_status.ok()) {
+                curMaster = servers.at(i);
+                std::cout << "Active server found. Setting as available" << std::endl;
+                return;
+            }
+        }
+        std::cout << "No active servers found, big oof. Will wait for new servers to join." << std::endl;
     }
 public:
     Status ServerLogin(ServerContext* context, const ReplyStatus* msgStat, ReplyStatus* replyStat) override {
-		//git test
-        //TODO add ability for crashed master to retake its spot in the vector
+        //All servers connect to the routing server and "log in" so that the routing server knows they are available
         std::string serverInfo = context->peer();
         IPInfo newServer = getIPInfo(serverInfo);
         newServer.portNo = msgStat->stat();
@@ -90,6 +106,7 @@ public:
             if(servers.at(i).ipAddress.compare(newServer.ipAddress) == 0 && servers.at(i).portNo.compare(newServer.portNo) == 0) {
                 foundServer = true;
                 servers.at(i).alive = true;
+                std::cout << "Renewed previous server- IP: " << newServer.ipAddress << ", ID: " << newServer.idNum << std::endl;
                 break;
             }
         }
@@ -98,11 +115,13 @@ public:
             if(servers.size() == 1) {
                 selectNewMaster();
             }
+            std::cout << "Added new server- IP: " << newServer.ipAddress << ", ID: " << newServer.idNum << std::endl;
         }
-        std::cout << "Added server: " << servers.at(servers.size() - 1).idNum << std::endl;
         return Status::OK;
     }
     Status GetServerInfo(ServerContext* context, const ReplyStatus* rStat, ServerInfo* si) override {
+        //Used by the client to get the information to connect to the proper server
+
         //Check to make sure current master is still alive
         grpc::Status grpc_status;
         do {
@@ -129,10 +148,6 @@ public:
         si->set_serverid(curMaster.idNum);
         return Status::OK;
     }
-    /*Status HeartBeat(ServerContext* context, const User* user, ReplyStatus* replyStat) override {
-        replyStat->set_stat("0");
-        return Status::OK;
-    }*/
 };
 
 void runServer(std::string serverAddr) {

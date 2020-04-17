@@ -470,7 +470,6 @@ int main(int argc, char** argv) {
     //New process created as slave server
     if(isSlave.compare("1") == 0) {
         std::cout << "Slave created" << std::endl;
-        std::cout << "Slave args: h-" << routingIP << ", r-" << routingPort << ", p-" << port << std::endl;
         bool gotHeartbeat = false;
         std::unique_ptr<TinySocial::Stub> stub_;
         std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
@@ -509,12 +508,11 @@ int main(int argc, char** argv) {
     ReplyStatus sStat; sStat.set_stat(port);
     ReplyStatus rStat;
     Status stat;
-    do {
-        std::cout << "Contacting routing server" << std::endl;
-        stat = stub_->ServerLogin(&context, sStat, &rStat);
-        if(!stat.ok())
-            usleep(500000);
-    } while(!stat.ok());
+    stat = stub_->ServerLogin(&context, sStat, &rStat);
+    if(!stat.ok()) {
+        std::cout << "Error connecting to routing server, exiting" << std::endl;
+        exit(1);
+    }
 
     std::cout << "Starting server" << std::endl;
 
