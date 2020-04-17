@@ -470,12 +470,13 @@ int main(int argc, char** argv) {
     //New process created as slave server
     if(isSlave.compare("1") == 0) {
         std::cout << "Slave created" << std::endl;
+        std::cout << "Slave args: h-" << routingIP << ", r-" << routingPort << ", p-" << port << std::endl;
         bool gotHeartbeat = false;
         std::unique_ptr<TinySocial::Stub> stub_;
         std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
         stub_ = TinySocial::NewStub(channel);
         do {
-            usleep(5000000);    //sleep for 1 second
+            usleep(2000000);    //sleep for 1 second
             ClientContext context;
             ReplyStatus sStat; sStat.set_stat("-1");
             ReplyStatus rStat;
