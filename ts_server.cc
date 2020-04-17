@@ -207,34 +207,6 @@ private:
         return;
     }
 
-    void checkChildProc() {
-        int status;
-        pid_t result = waitpid(childPid, &status, WNOHANG);
-        if(result != 0) {
-            if(result == -1) {
-                std::cout << "Error checking on child, exiting" << std::endl;
-                exit(1);
-            }
-            else {
-                pid_t pd = fork();
-                if(pd == 0) {
-                    std::cout << "Slave died, creating new one" << std::endl;
-
-                    char * rIP_c = new char[routingIP.size() + 1];          char * rP_c = new char[routingPort.size() + 1];             char * p_c = new char[port.size() + 1];
-                    std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
-                    rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
-
-                    char * argv_list[] = {"-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
-                    execv("./ts_server", argv_list);
-                    delete[] rIP_c; delete[] rP_c; delete[] p_c;
-                    exit(1);
-                }
-                childPid = pd;
-            }
-        }
-        return;
-    }
-
 public:
     Status SignIn(ServerContext* context, const User* user, ReplyStatus* replyStat) {        
         if(!dataLoaded) {
@@ -461,8 +433,6 @@ public:
     }
     Status HeartBeat(ServerContext* context, const ReplyStatus* sentStat, ReplyStatus* replyStat) override {
         replyStat->set_stat("0");
-        //if(sentStat->stat() != "-1")
-        //    checkChileProc();
         return Status::OK;
     }
 };
@@ -517,7 +487,6 @@ int main(int argc, char** argv) {
 
     pid_t pd = fork();
     if(pd == 0) {
-        std::cout << "Slave created" << std::endl;
         char * rIP_c = new char[routingIP.size() + 1];          char * rP_c = new char[routingPort.size() + 1];             char * p_c = new char[port.size() + 1];
         std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
         rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
@@ -529,7 +498,7 @@ int main(int argc, char** argv) {
     }
     childPid = pd;
 
-    std::cout << "Master created" << std::endl;
+    std::cout << "Master started" << std::endl;
     signal(SIGCHLD, handleChildKill);
     std::unique_ptr<TinySocial::Stub> stub_;
     std::shared_ptr<Channel> channel = grpc::CreateChannel(routingIP + ":" + routingPort, grpc::InsecureChannelCredentials());
@@ -538,7 +507,9 @@ int main(int argc, char** argv) {
     ServerInfo tsServer;
     ReplyStatus sStat; sStat.set_stat(port);
     ReplyStatus rStat;
+    std::cout << "Contacting routing server" << std::endl;
     Status stat = stub_->ServerLogin(&context, sStat, &rStat);
+    std::cout << "Routing server connection: " << stat.ok() << std::endl;
 
     std::cout << "Starting server" << std::endl;
 
