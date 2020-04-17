@@ -115,17 +115,17 @@ public:
             }
         } while(!grpc_status.ok());
 
-        std::string rStatS = rStat->stat();
-        std::cout << "GetServerInfo:rStat is: " << rStatS << std::endl;
-        if(rStatS != "-1") {
-            for(int i = 0; i < servers.size(); i++) {
-                if(servers.at(i).alive == true && rStatS.compare(servers.at(i).idNum) == 0) {
-                    servers.at(i).alive = false;
-                    selectNewMaster();
-                    break;
-                }
-            }
-        }
+        //std::string rStatS = rStat->stat();
+        //std::cout << "GetServerInfo:rStat is: " << rStatS << std::endl;
+        //if(rStatS != "-1") {
+        //    for(int i = 0; i < servers.size(); i++) {
+        //        if(servers.at(i).alive == true && rStatS.compare(servers.at(i).idNum) == 0) {
+        //            servers.at(i).alive = false;
+        //            selectNewMaster();
+        //            break;
+        //        }
+        //    }
+        //}
         si->set_serverip(curMaster.ipAddress);
         si->set_serverport(curMaster.portNo);
         si->set_serverid(curMaster.idNum);
