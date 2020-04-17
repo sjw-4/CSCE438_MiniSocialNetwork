@@ -512,6 +512,8 @@ int main(int argc, char** argv) {
     do {
         std::cout << "Contacting routing server" << std::endl;
         stat = stub_->ServerLogin(&context, sStat, &rStat);
+        if(!stat.ok())
+            usleep(500000);
     } while(!stat.ok());
 
     std::cout << "Starting server" << std::endl;
