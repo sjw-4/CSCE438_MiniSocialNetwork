@@ -469,10 +469,11 @@ int main(int argc, char** argv) {
     }
     //New process created as slave server
     if(isSlave.compare("1") == 0) {
+        port += 1;
         std::cout << "Slave created" << std::endl;
         bool gotHeartbeat = false;
         std::unique_ptr<TinySocial::Stub> stub_;
-        std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
+        std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + (port - 1), grpc::InsecureChannelCredentials());
         stub_ = TinySocial::NewStub(channel);
         do {
             usleep(5000000);    //sleep for 1 second
