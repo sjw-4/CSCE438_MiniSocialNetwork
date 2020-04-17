@@ -85,9 +85,19 @@ public:
         std::string serverInfo = context->peer();
         IPInfo newServer = getIPInfo(serverInfo);
         newServer.portNo = msgStat->stat();
-        servers.push_back(newServer);
-        if(servers.size() == 1) {
-            selectNewMaster();
+        bool foundServer = false;
+        for(int i = 0; i < servers.size(); i++) {
+            if(servers.at(i).ipAddress.compare(newServer.ipAddress) == 0 && servers.at(i).portNo.compare(newServer.portNo) == 0) {
+                foundServer = true;
+                servers.at(i).alive = true;
+                break;
+            }
+        }
+        if(!foundServer) {
+            servers.push_back(newServer);
+            if(servers.size() == 1) {
+                selectNewMaster();
+            }
         }
         std::cout << "Added server: " << servers.at(servers.size() - 1).idNum << std::endl;
         return Status::OK;
@@ -114,18 +124,6 @@ public:
                 }
             }
         } while(!grpc_status.ok());
-
-        //std::string rStatS = rStat->stat();
-        //std::cout << "GetServerInfo:rStat is: " << rStatS << std::endl;
-        //if(rStatS != "-1") {
-        //    for(int i = 0; i < servers.size(); i++) {
-        //        if(servers.at(i).alive == true && rStatS.compare(servers.at(i).idNum) == 0) {
-        //            servers.at(i).alive = false;
-        //            selectNewMaster();
-        //            break;
-        //        }
-        //    }
-        //}
         si->set_serverip(curMaster.ipAddress);
         si->set_serverport(curMaster.portNo);
         si->set_serverid(curMaster.idNum);
