@@ -52,7 +52,7 @@ void handleChildKill(int signum) {
         std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
         rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
 
-        char * argv_list[] = {"-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
+        char * argv_list[] = {"./ts_server", "-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
         execv("./ts_server", argv_list);
         delete[] rIP_c; delete[] rP_c; delete[] p_c;
         exit(1);
@@ -493,7 +493,7 @@ int main(int argc, char** argv) {
         std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
         rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
 
-        char * argv_list[] = {"-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
+        char * argv_list[] = {"./ts_server", "-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
         execv("./ts_server", argv_list);
         delete[] rIP_c; delete[] rP_c; delete[] p_c;
         exit(1);
