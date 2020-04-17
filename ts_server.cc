@@ -475,7 +475,7 @@ int main(int argc, char** argv) {
         std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
         stub_ = TinySocial::NewStub(channel);
         do {
-            usleep(2000000);    //sleep for 1 second
+            usleep(2000000);    //sleep for 2 seconds
             ClientContext context;
             ReplyStatus sStat; sStat.set_stat("-1");
             ReplyStatus rStat;

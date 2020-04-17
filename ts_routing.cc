@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sys/wait.h>
 
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
@@ -59,7 +60,6 @@ IPInfo getIPInfo(std::string unformatted) {
     }
     newIP.alive = true;
     newIP.portNo = -1;
-    curMaxId++;
     newIP.idNum = std::to_string(curMaxId);
     return newIP;
 }
@@ -78,6 +78,7 @@ private:
             }
         }
         std::cout << "No servers available, doing final check. Please wait..." << std::endl;
+        usleep(500000); //sleep for half a second
         for(int i = 0; i < servers.size(); i++) {
             std::unique_ptr<TinySocial::Stub> stub_;
             std::shared_ptr<Channel> channel = grpc::CreateChannel(servers.at(i).ipAddress + ":" + servers.at(i).portNo, grpc::InsecureChannelCredentials());
@@ -106,11 +107,12 @@ public:
             if(servers.at(i).ipAddress.compare(newServer.ipAddress) == 0 && servers.at(i).portNo.compare(newServer.portNo) == 0) {
                 foundServer = true;
                 servers.at(i).alive = true;
-                std::cout << "Renewed previous server- IP: " << newServer.ipAddress << ", ID: " << newServer.idNum << std::endl;
+                std::cout << "Renewed previous server- IP: " << servers.at(i).ipAddress << ", ID: " << servers.at(i).idNum << std::endl;
                 break;
             }
         }
         if(!foundServer) {
+            curMaxId++;
             servers.push_back(newServer);
             if(servers.size() == 1) {
                 selectNewMaster();
