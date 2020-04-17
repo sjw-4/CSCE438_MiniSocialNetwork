@@ -80,7 +80,7 @@ private:
         std::cout << "No servers available, doing final check. Please wait..." << std::endl;
         for(int i = 0; i < servers.size(); i++) {
             std::unique_ptr<TinySocial::Stub> stub_;
-            std::shared_ptr<Channel> channel = grpc::CreateChannel(servers(i).ipAddress + ":" + servers(i).portNo, grpc::InsecureChannelCredentials());
+            std::shared_ptr<Channel> channel = grpc::CreateChannel(servers.at(i).ipAddress + ":" + servers.at(i).portNo, grpc::InsecureChannelCredentials());
             stub_ = TinySocial::NewStub(channel);
             ClientContext context;
             ServerInfo tsServer;
