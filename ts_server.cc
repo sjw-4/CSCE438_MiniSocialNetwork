@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <sys/wait.h>
+#include <sys/types.h>
 
 #include <grpc++/grpc++.h>
 #include "ts.grpc.pb.h"
@@ -189,7 +190,24 @@ private:
         return;
     }
 
-    void checkChileProc() {
+    void handleChildKill(int signum) {
+        std::cout << "Child killed, creating new one" << std::endl;
+        wait(NULL);
+        pid_t pd = fork();
+                if(pd == 0) {
+                    char * rIP_c = new char[routingIP.size() + 1];          char * rP_c = new char[routingPort.size() + 1];             char * p_c = new char[port.size() + 1];
+                    std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
+                    rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
+
+                    char * argv_list[] = {"-h", rIP_c, "-r", rP_c, "-p", p_c, "-s", "1", NULL};
+                    execv("./ts_server", argv_list);
+                    delete[] rIP_c; delete[] rP_c; delete[] p_c;
+                    exit(1);
+                }
+                childPid = pd;
+    }
+
+    void checkChildProc() {
         int status;
         pid_t result = waitpid(childPid, &status, WNOHANG);
         if(result != 0) {
@@ -443,8 +461,8 @@ public:
     }
     Status HeartBeat(ServerContext* context, const ReplyStatus* sentStat, ReplyStatus* replyStat) override {
         replyStat->set_stat("0");
-        if(sentStat->stat() != "-1")
-            checkChileProc();
+        //if(sentStat->stat() != "-1")
+        //    checkChileProc();
         return Status::OK;
     }
 };
@@ -479,8 +497,9 @@ int main(int argc, char** argv) {
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }
+    //New process created as slave server
     if(isSlave.compare("1") == 0) {
-        //same chile process as below
+        std::cout << "Slave created" << std::endl;
         bool gotHeartbeat = false;
         std::unique_ptr<TinySocial::Stub> stub_;
         std::shared_ptr<Channel> channel = grpc::CreateChannel("localhost:" + port, grpc::InsecureChannelCredentials());
@@ -493,11 +512,12 @@ int main(int argc, char** argv) {
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
             gotHeartbeat = stat.ok();
         } while(gotHeartbeat);
+        std::cout << "Master killed, taking over and creating slave" << std::endl;
     }
 
-    std::cout << "Fork called" << std::endl;
     pid_t pd = fork();
     if(pd == 0) {
+        std::cout << "Slave created" << std::endl;
         char * rIP_c = new char[routingIP.size() + 1];          char * rP_c = new char[routingPort.size() + 1];             char * p_c = new char[port.size() + 1];
         std::copy(routingIP.begin(), routingIP.end(), rIP_c);   std::copy(routingPort.begin(), routingPort.end(), rP_c);    std::copy(port.begin(), port.end(), p_c);
         rIP_c[routingIP.size()] = '\0';                         rP_c[routingPort.size()] = '\0';                            p_c[port.size()] = '\0';
@@ -508,8 +528,9 @@ int main(int argc, char** argv) {
         exit(1);
     }
     childPid = pd;
-    //parent process
 
+    std::cout << "Master created" << std::endl;
+    signal(SIGCHLD, handleChildKill);
     std::unique_ptr<TinySocial::Stub> stub_;
     std::shared_ptr<Channel> channel = grpc::CreateChannel(routingIP + ":" + routingPort, grpc::InsecureChannelCredentials());
     stub_ = TinySocial::NewStub(channel);
