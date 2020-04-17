@@ -483,7 +483,6 @@ int main(int argc, char** argv) {
             Status stat = stub_->HeartBeat(&context, sStat, &rStat);
             gotHeartbeat = stat.ok();
         } while(gotHeartbeat);
-        port += 1;
         std::cout << "Master killed, taking over and creating slave" << std::endl;
     }
 
